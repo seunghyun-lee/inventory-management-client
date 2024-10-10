@@ -40,3 +40,8 @@
 .small-subname {
   font-size: 0.5em;
 }
+
+.form-control::placeholder {
+  color: #adb5bd;
+  font-style: italic;
+}

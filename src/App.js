@@ -6,7 +6,10 @@ import InboundForm from './components/InboundForm';
 import OutboundForm from './components/OutboundForm';
 import InboundHistory from './components/InboundHistory';
 import OutboundHistory from './components/OutboundHistory';
+import UserManagement from './components/UserManagement';
+import ManufacturerManagement from './components/ManufacturerManagement';
 import LoginPage from './components/LoginPage';
+import SignupPage from './components/SignupPage';
 import UserProfile from './components/UserProfile';
 import NavbarContent from './components/NavbarContent';
 
@@ -39,11 +42,14 @@ function App() {
                 <Container className="mt-4">
                     <Routes>
                         <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+                        <Route path="/signup" element={<SignupPage />} />
                         <Route path="/" element={<PrivateRoute><InventoryList /></PrivateRoute>} />
                         <Route path="/inbound" element={<PrivateRoute><InboundForm /></PrivateRoute>} />
                         <Route path="/outbound/:itemId?" element={<PrivateRoute><OutboundForm /></PrivateRoute>} />
                         <Route path="/inbound-history" element={<PrivateRoute><InboundHistory /></PrivateRoute>} />
                         <Route path="/outbound-history" element={<PrivateRoute><OutboundHistory /></PrivateRoute>} />
+                        <Route path="/manufacturers" element={<PrivateRoute><ManufacturerManagement /></PrivateRoute>} />
+                        <Route path="/user-management" element={<PrivateRoute><UserManagement /></PrivateRoute>} />
                         <Route path="/profile" element={<PrivateRoute><UserProfile onLogout={handleLogout} /></PrivateRoute>} />
                     </Routes>
                 </Container>

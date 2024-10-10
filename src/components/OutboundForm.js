@@ -1,9 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
-import { Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
+import { Form, Row, Col, Button, Card, Alert, Spinner } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+
+const readonlyStyle = {
+    backgroundColor: '#f8f9fa',  // 옅은 회색 배경
+    color: '#6c757d'  // 약간 어두운 텍스트 색상
+};
 
 function OutboundForm() {
     const { itemId } = useParams();
@@ -34,6 +39,13 @@ function OutboundForm() {
     }, [itemId]);
 
     useEffect(() => {
+        const today = new Date().toISOString().split('T')[0];
+        const user = JSON.parse(localStorage.getItem('user'));
+        setFormData(prevData => ({
+            ...prevData,
+            date: today,
+            handler_name: user ? user.handler_name : ''
+        }));
         fetchItemDetails();
     }, [fetchItemDetails]);
     
@@ -86,70 +98,102 @@ function OutboundForm() {
             <Card.Header as='h2'>출고 등록</Card.Header>
             <Card.Body>
                 <Form onSubmit={handleSubmit}>
-                    <Form.Group className='mb-3'>
-                        <Form.Label>품목 이름</Form.Label>
-                        <Form.Control type='text' value={item.item_name} readOnly />
+                    <Form.Group as={Row} className="mb-3 align-items-center">
+                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>날짜</Form.Label>
+                        <Col xs={9} sm={9} md={10}>
+                            <Form.Control 
+                                type="date" 
+                                name="date" 
+                                value={formData.date} 
+                                onChange={handleChange} 
+                                required 
+                            />
+                        </Col>
                     </Form.Group>
-                    <Form.Group className='mb-3'>
-                        <Form.Label>품목 뒷부호</Form.Label>
-                        <Form.Control type='text' value={item.item_subname} readOnly />
+                    <Form.Group as={Row} className="mb-3 align-items-center">
+                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>거래처</Form.Label>
+                        <Col xs={9} sm={9} md={10}>
+                            <Form.Control 
+                                type='text' 
+                                name='client'
+                                value={formData.client}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Col>
                     </Form.Group>
-                    <Form.Group className='mb-3'>
-                        <Form.Label>제조사</Form.Label>
-                        <Form.Control type='text' value={item.manufacturer} readOnly />
+                    <Form.Group as={Row} className="mb-3 align-items-center">
+                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>물품명</Form.Label>
+                        <Col xs={9} sm={9} md={10}>
+                            <Form.Control 
+                                type='text' 
+                                value={item.item_name} 
+                                readOnly
+                                style={readonlyStyle}
+                            />
+                        </Col>
                     </Form.Group>
-                    <Form.Group className='mb-3'>
-                        <Form.Label>전체 재고</Form.Label>
-                        <Form.Control type='text' value={item.current_quantity} readOnly />
+                    <Form.Group as={Row} className="mb-3 align-items-center">
+                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>재고수량</Form.Label>
+                        <Col xs={9} sm={9} md={10}>
+                            <Form.Control 
+                                type='text' 
+                                value={item.current_quantity} 
+                                readOnly 
+                                style={readonlyStyle}
+                            />
+                        </Col>
+                    </Form.Group>
+                    <Form.Group as={Row} className="mb-3 align-items-center">
+                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>출고수량</Form.Label>
+                        <Col xs={9} sm={9} md={10}>
+                            <Form.Control 
+                                type="number" 
+                                name="total_quantity"
+                                value={formData.total_quantity} 
+                                onChange={handleChange}
+                                min="1"
+                                max={item.current_quantity}
+                                required 
+                            />
+                        </Col>
+                    </Form.Group>
+                    <Form.Group as={Row} className="mb-3 align-items-center">
+                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>뒷부호</Form.Label>
+                        <Col xs={9} sm={9} md={10}>
+                            <Form.Control 
+                                type='text' 
+                                value={item.item_subname} 
+                                readOnly 
+                                style={readonlyStyle}
+                            />
+                        </Col>
+                    </Form.Group>
+                    <Form.Group as={Row} className="mb-3 align-items-center">
+                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>메이커</Form.Label>
+                        <Col xs={9} sm={9} md={10}>
+                            <Form.Control 
+                                type='text' 
+                                value={item.manufacturer} 
+                                readOnly 
+                                style={readonlyStyle}
+                            />
+                        </Col>
+                    </Form.Group>
+                    <Form.Group as={Row} className="mb-3 align-items-center">
+                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>창고명</Form.Label>
+                        <Col xs={9} sm={9} md={10}>
+                            <Form.Control
+                                type="text"
+                                name="warehouse_name"
+                                value={formData.warehouse_name}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Col>
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Label>출고 날짜</Form.Label>
-                        <Form.Control type="date" name="date" value={formData.date} onChange={handleChange} required />
-                    </Form.Group>
-                    <Form.Group className='mb-3'>
-                        <Form.Label>거래처</Form.Label>
-                        <Form.Control 
-                            type='text' 
-                            name='client'
-                            value={formData.client}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>출고 수량</Form.Label>
-                        <Form.Control 
-                            type="number" 
-                            name="total_quantity"
-                            value={formData.total_quantity} 
-                            onChange={handleChange}
-                            min="1"
-                            max={item.current_quantity}
-                            required 
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>담당자</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="handler_name"
-                            value={formData.handler_name}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>창고명</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="warehouse_name"
-                            value={formData.warehouse_name}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>설명</Form.Label>
+                        <Form.Label>메모</Form.Label>
                         <Form.Control
                             as="textarea"
                             name="description"
@@ -157,9 +201,27 @@ function OutboundForm() {
                             onChange={handleChange}
                         />
                     </Form.Group>
-                    <Button variant='primary' type='submit' disabled={submitting}>
-                        {submitting ? '저리 중...' : '출고 등록'}
-                    </Button>
+                    <Form.Group as={Row} className="mb-3 align-items-center">
+                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>담당자</Form.Label>
+                        <Col xs={9} sm={9} md={10}>
+                            <Form.Control
+                                type="text"
+                                name="handler_name"
+                                value={formData.handler_name}
+                                onChange={handleChange}
+                                required
+                                readOnly
+                                style={readonlyStyle}
+                            />
+                        </Col>
+                    </Form.Group>
+                    <Row className="justify-content-center mt-4">
+                        <Col xs={12} sm={6} md={4} lg={3} className="d-flex justify-content-center">
+                            <Button variant='primary' type='submit' disabled={submitting}>
+                            {submitting ? '저리 중...' : '출고 등록'}
+                            </Button>
+                        </Col>
+                    </Row>
                 </Form>
             </Card.Body>
         </Card>

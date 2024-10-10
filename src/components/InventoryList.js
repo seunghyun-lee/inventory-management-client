@@ -37,6 +37,18 @@ function InventoryList() {
         navigate('/inbound');
     };
 
+    const handleDelete = async (itemId) => {
+        if (window.confirm('정말로 이 항목을 삭제하시겠습니까?')) {
+          try {
+            await axios.delete(`${API_BASE_URL}/api/inventory/${itemId}`);
+            setInventory(inventory.filter(item => item.id !== itemId));
+          } catch (error) {
+            console.error('Error deleting item:', error);
+            setError('항목 삭제에 실패했습니다.');
+          }
+        }
+    };
+
     if (loading) {
         return (
           <div className="text-center mt-5">
@@ -77,13 +89,18 @@ function InventoryList() {
                                     <span className="text-center">
                                         <strong>창고:</strong> {item.warehouse_name || '모름'}
                                     </span>
-                                    <Button variant="primary" size="sm" onClick={() => handleOutbound(item.id)}>
-                                        출고
-                                    </Button>
                                 </Card.Text>
                                 <Card.Text>
                                     <strong>비고:</strong> {item.description || '없음'}
                                 </Card.Text>
+                                <div className="d-flex justify-content-between mt-3">
+                                    <Button variant="danger" size="sm" onClick={() => handleDelete(item.id)}>
+                                        삭제
+                                    </Button>
+                                    <Button variant="primary" size="sm" onClick={() => handleOutbound(item.id)}>
+                                        출고
+                                    </Button>
+                                </div>
                             </Card.Body>
                         </Card>
                     </Col>
