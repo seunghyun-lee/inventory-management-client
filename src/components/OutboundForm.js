@@ -15,12 +15,13 @@ function OutboundForm() {
     const navigate = useNavigate();
     const [item, setItem] = useState(null);
     const [formData, setFormData] = useState({
-        date: '',
+        date: new Date().toISOString().split('T')[0],
         client: '',
         total_quantity: '',
         handler_name: '',
+        description: '',
         warehouse_name: '',
-        description: ''
+        warehouse_shelf: ''
     });
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -30,6 +31,11 @@ function OutboundForm() {
         try {
             const response = await axios.get(`${API_BASE_URL}/api/inventory/${itemId}`);
             setItem(response.data);
+            setFormData(prevData => ({
+                ...prevData,
+                warehouse_name: response.data.warehouse_name || '',
+                warehouse_shelf: response.data.warehouse_shelf || ''
+            }));
         } catch (error) {
             console.error('Error fetching item details:', error);
             setError('품목 정보를 불러오는데 실패했습니다. 나중에 다시 시도해 주세요.');
@@ -39,11 +45,9 @@ function OutboundForm() {
     }, [itemId]);
 
     useEffect(() => {
-        const today = new Date().toISOString().split('T')[0];
         const user = JSON.parse(localStorage.getItem('user'));
         setFormData(prevData => ({
             ...prevData,
-            date: today,
             handler_name: user ? user.handler_name : ''
         }));
         fetchItemDetails();
@@ -65,8 +69,7 @@ function OutboundForm() {
             await axios.post(`${API_BASE_URL}/api/transactions/outbound`, {
                 item_id: parseInt(itemId, 10),
                 ...formData,
-                total_quantity: parseInt(formData.total_quantity, 10),
-                client: formData.client
+                total_quantity: parseInt(formData.total_quantity, 10)
             });
             navigate('/');
         } catch (error) {
@@ -181,14 +184,26 @@ function OutboundForm() {
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} className="mb-3 align-items-center">
-                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>창고명</Form.Label>
+                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>창고</Form.Label>
                         <Col xs={9} sm={9} md={10}>
                             <Form.Control
                                 type="text"
                                 name="warehouse_name"
                                 value={formData.warehouse_name}
-                                onChange={handleChange}
-                                required
+                                readOnly 
+                                style={readonlyStyle}
+                            />
+                        </Col>
+                    </Form.Group>
+                    <Form.Group as={Row} className="mb-3 align-items-center">
+                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>위치</Form.Label>
+                        <Col xs={9} sm={9} md={10}>
+                            <Form.Control
+                                type="text"
+                                name="warehouse_shelf"
+                                value={formData.warehouse_shelf}
+                                readOnly 
+                                style={readonlyStyle}
                             />
                         </Col>
                     </Form.Group>

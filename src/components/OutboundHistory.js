@@ -17,10 +17,15 @@ function OutboundHistory() {
         try {
             setLoading(true);
             const response = await axios.get(`${API_BASE_URL}/api/outbound-history`);
-            setOutboundHistory(response.data);
+            if (response.data.message) {
+                setOutboundHistory([]);
+                setError(response.data.message);
+            } else {
+                setOutboundHistory(response.data);
+            }
         } catch (error) {
-            console.log('입고 이력을 불러오는데 실패했습니다.');
-            setError('입고 이력을 불러오는데 실패했습니다. 나중에 다시 시도해 주세요.');
+            console.log('출고 이력을 불러오는데 실패했습니다.');
+            setError('출고 이력을 불러오는데 실패했습니다. 나중에 다시 시도해 주세요.');
         } finally {
             setLoading(false);
         }

@@ -17,7 +17,13 @@ function ShelfManagement() {
     const fetchShelfs = async () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/api/shelfs`);
-            setShelfs(response.data);
+            const shelfData = response.data.data || response.data;
+            if (Array.isArray(shelfData)) {
+                setShelfs(response.data);
+            } else {
+                console.error('Unexpected data structure:', shelfData);
+                setError('위치 데이터 구조가 예상과 다릅니다.');
+            }
         } catch (error) {
             console.error('Error fetching shelfs:', error);
             setError('위치 목록을 불러오는데 실패했습니다.');
@@ -30,7 +36,8 @@ function ShelfManagement() {
         setSuccess(null);
         try {
             const response = await axios.post(`${API_BASE_URL}/api/shelfs`, { shelf: newShelf });
-            setShelfs([...shelfs, response.data]);
+            const newShelfData = response.data.data || response.data;
+            setShelfs(prevShelfs => [...prevShelfs, newShelfData]);
             setNewShelf('');
             setSuccess('위치가 추가되었습니다.');
         } catch (error) {
@@ -44,7 +51,7 @@ function ShelfManagement() {
         setSuccess(null);
         try {
             await axios.delete(`${API_BASE_URL}/api/shelfs/${id}`);
-            setShelfs(shelfs.filter(m => m.id !== id));
+            setShelfs(prevShelfs => prevShelfs.filter(m => m.id !== id));
             setSuccess('위치가 삭제되었습니다.');
         } catch (error) {
             console.error('Error deleting shelf:', error);

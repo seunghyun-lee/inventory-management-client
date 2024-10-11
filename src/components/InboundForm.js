@@ -46,30 +46,54 @@ function InboundForm() {
     const fetchManufacturers = async () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/api/manufacturers`);
-            setManufacturers(response.data);
+            const manufacturersData = response.data.data || response.data;
+            if (Array.isArray(manufacturersData)) {
+                setManufacturers(manufacturersData);
+            } else {
+                console.error('Unexpected manufacturers data structure:', manufacturersData);
+                setError('제조사 데이터 구조가 예상과 다릅니다.');
+                setManufacturers([]);
+            }
         } catch (error) {
             console.error('Error fetching manufacturers:', error);
             setError('제조사 목록을 불러오는데 실패했습니다.');
+            setManufacturers([]);
         }
     };
 
     const fetchWarehouses = async () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/api/warehouses`);
-            setWarehouses(response.data);
+            const warehousesData = response.data.data || response.data;
+            if (Array.isArray(warehousesData)) {
+                setWarehouses(warehousesData);
+            } else {
+                console.error('Unexpected warehouses data structure:', warehousesData);
+                setError('창고 데이터 구조가 예상과 다릅니다.');
+                setWarehouses([]);
+            }
         } catch (error) {
             console.error('Error fetching warehouses:', error);
             setError('창고 목록을 불러오는데 실패했습니다.');
+            setWarehouses([]);
         }
     };
 
     const fetchShelfs = async () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/api/shelfs`);
-            setShelfs(response.data);
+            const shelfsData = response.data.data || response.data;
+            if (Array.isArray(shelfsData)) {
+                setShelfs(shelfsData);
+            } else {
+                console.error('Unexpected shelfs data structure:', shelfsData);
+                setError('위치 데이터 구조가 예상과 다릅니다.');
+                setShelfs([]);
+            }
         } catch (error) {
             console.error('Error fetching shelfs:', error);
             setError('위치 목록을 불러오는데 실패했습니다.');
+            setShelfs([]);
         }
     };
 
@@ -91,14 +115,14 @@ function InboundForm() {
     const handleWarehouseSelect = (warehouse) => {
         setFormData(prevData => ({
             ...prevData,
-            warehouse: warehouse
+            warehouse_name: warehouse
         }));
     };
 
     const handleShelfSelect = (shelf) => {
         setFormData(prevData => ({
             ...prevData,
-            shelf: shelf
+            warehouse_shelf: shelf
         }));
     };
 
@@ -106,8 +130,26 @@ function InboundForm() {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        const requiredFields = ['date', 'supplier', 'item_name', 'total_quantity', 'manufacturer', 'warehouse_name', 'handler_name'];
+        const missingFields = requiredFields.filter(field => !formData[field]);
+
+        if (missingFields.length > 0) {
+            setError(`다음 필드를 입력해주세요: ${missingFields.join(', ')}`);
+            setLoading(false);
+            return;
+        }
+
+        const dataToSend = {
+            ...formData,
+            item_subname: formData.item_subname || '',
+            warehouse_shelf: formData.warehouse_shelf || '',
+        };
+
+        console.log('Sending data to server:', dataToSend); // 디버깅을 위한 로그
+
         try {
-            await axios.post(`${API_BASE_URL}/api/transactions/inbound`, formData);
+            const response = await axios.post(`${API_BASE_URL}/api/transactions/inbound`, dataToSend);
+            console.log('Server response:', response.data); // 디버깅을 위한 로그
             navigate('/');
         } catch (error) {
             console.error('입고 처리 중 오류 발생:', error.response ? error.response.data : error.message);
@@ -208,11 +250,11 @@ function InboundForm() {
                         <Col xs={9} sm={9} md={10}>
                             <Dropdown>
                                 <Dropdown.Toggle variant="outline-secondary" id="dropdown-warehouse">
-                                    {formData.warehouse || "선택해주세요"}
+                                    {formData.warehouse_name || "선택해주세요"}
                                 </Dropdown.Toggle>
 
                                 <Dropdown.Menu>
-                                    {warehouses.map((m) => (
+                                    {Array.isArray(warehouses) && warehouses.map((m) => (
                                         <Dropdown.Item 
                                             key={m.id} 
                                             onClick={() => handleWarehouseSelect(m.warehouse)}
@@ -229,11 +271,11 @@ function InboundForm() {
                         <Col xs={9} sm={9} md={10}>
                             <Dropdown>
                                 <Dropdown.Toggle variant="outline-secondary" id="dropdown-shelf">
-                                    {formData.shelf || "선택해주세요"}
+                                    {formData.warehouse_shelf || "선택해주세요"}
                                 </Dropdown.Toggle>
 
                                 <Dropdown.Menu>
-                                    {shelfs.map((m) => (
+                                    {Array.isArray(shelfs) && shelfs.map((m) => (
                                         <Dropdown.Item 
                                             key={m.id} 
                                             onClick={() => handleShelfSelect(m.shelf)}

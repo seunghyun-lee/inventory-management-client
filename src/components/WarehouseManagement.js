@@ -17,7 +17,13 @@ function WarehouseManagement() {
     const fetchWarehouses = async () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/api/warehouses`);
-            setWarehouses(response.data);
+            const warehousesData = response.data.data || response.data;
+            if (Array.isArray(warehousesData)) {
+                setWarehouses(warehousesData);
+            } else {
+                console.error('Unexpected data structure:', warehousesData);
+                setError('창고 데이터 구조가 예상과 다릅니다.');
+            }
         } catch (error) {
             console.error('Error fetching warehouses:', error);
             setError('창고 목록을 불러오는데 실패했습니다.');
@@ -30,7 +36,8 @@ function WarehouseManagement() {
         setSuccess(null);
         try {
             const response = await axios.post(`${API_BASE_URL}/api/warehouses`, { warehouse: newWarehouse });
-            setWarehouses([...warehouses, response.data]);
+            const newWarehouseData = response.data.data || response.data;
+            setWarehouses(prevWarehouses => [...prevWarehouses, newWarehouseData]);
             setNewWarehouse('');
             setSuccess('창고가 추가되었습니다.');
         } catch (error) {
@@ -44,7 +51,7 @@ function WarehouseManagement() {
         setSuccess(null);
         try {
             await axios.delete(`${API_BASE_URL}/api/warehouses/${id}`);
-            setWarehouses(warehouses.filter(m => m.id !== id));
+            setWarehouses(prevWarehouses => prevWarehouses.filter(m => m.id !== id));
             setSuccess('창고가 삭제되었습니다.');
         } catch (error) {
             console.error('Error deleting warehouse:', error);

@@ -17,10 +17,19 @@ function ManufacturerManagement() {
     const fetchManufacturers = async () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/api/manufacturers`);
-            setManufacturers(response.data);
+            console.log('Server response:', response.data); // 디버깅을 위한 로그
+            const manufacturersData = response.data.data || response.data;
+            if (Array.isArray(manufacturersData)) {
+                setManufacturers(manufacturersData);
+            } else {
+                console.error('Unexpected data structure:', manufacturersData);
+                setError('제조사 데이터 구조가 예상과 다릅니다.');
+                setManufacturers([]); // 빈 배열로 설정
+            }
         } catch (error) {
             console.error('Error fetching manufacturers:', error);
             setError('제조사 목록을 불러오는데 실패했습니다.');
+            setManufacturers([]); // 빈 배열로 설정
         }
     };
 
@@ -30,27 +39,29 @@ function ManufacturerManagement() {
         setSuccess(null);
         try {
             const response = await axios.post(`${API_BASE_URL}/api/manufacturers`, { manufacturer: newManufacturer });
-            setManufacturers([...manufacturers, response.data]);
+            console.log('Add manufacturer response:', response.data); // 디버깅을 위한 로그
+            const newManufacturerData = response.data.data || response.data;
+            setManufacturers(prevManufacturers => [...prevManufacturers, newManufacturerData]);
             setNewManufacturer('');
             setSuccess('제조사가 추가되었습니다.');
         } catch (error) {
             console.error('Error adding manufacturer:', error);
             setError('제조사 추가에 실패했습니다.');
         }
-      };
+    };
     
     const handleDeleteManufacturer = async (id) => {
         setError(null);
         setSuccess(null);
         try {
             await axios.delete(`${API_BASE_URL}/api/manufacturers/${id}`);
-            setManufacturers(manufacturers.filter(m => m.id !== id));
+            setManufacturers(prevManufacturers => prevManufacturers.filter(m => m.id !== id));
             setSuccess('제조사가 삭제되었습니다.');
         } catch (error) {
             console.error('Error deleting manufacturer:', error);
             setError('제조사 삭제에 실패했습니다.');
         }
-      };
+    };
 
     return (
         <Container>
