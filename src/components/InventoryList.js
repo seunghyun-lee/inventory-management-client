@@ -50,6 +50,24 @@ function InventoryList() {
         }
     };
 
+    const handleExcelDownload = async () => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/api/export-excel`, {
+                responseType: 'blob', // 중요: 응답을 blob으로 받습니다.
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'inventory_report.xlsx');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('Error downloading Excel file:', error);
+            setError('Excel 파일 다운로드에 실패했습니다.');
+        }
+    };
+
     if (loading) {
         return (
           <div className="text-center mt-5">
@@ -71,6 +89,9 @@ function InventoryList() {
                     <h2 className="mb-0">재고 목록</h2>
                 </Col>
                 <Col xs="auto">
+                    <Button variant="info" onClick={handleExcelDownload} className="me-2">
+                        Excel 다운로드
+                    </Button>
                     <Button variant="success" onClick={handleInbound}>
                         입고 등록
                     </Button>

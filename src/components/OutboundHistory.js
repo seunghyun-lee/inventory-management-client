@@ -61,13 +61,14 @@ function OutboundHistory() {
                                     <tr>
                                         <th>출고날짜</th>
                                         <th>납품업체</th>
-                                        <th>품목 이름</th>
-                                        <th>품목 뒷번호</th>
-                                        <th>제조사</th>
+                                        <th>물품명</th>
                                         <th>수량</th>
-                                        <th>담당자</th>
+                                        <th>뒷부호</th>
+                                        <th>메이커</th>
                                         <th>창고</th>
-                                        <th>비고</th>
+                                        <th>위치</th>
+                                        <th>메모</th>
+                                        <th>담당자</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -76,12 +77,13 @@ function OutboundHistory() {
                                         <td>{item.date}</td>
                                         <td>{item.client}</td>
                                         <td>{item.item_name}</td>
+                                        <td>{item.total_quantity}</td>
                                         <td>{item.item_subname}</td>
                                         <td>{item.manufacturer}</td>
-                                        <td>{item.total_quantity}</td>
-                                        <td>{item.handler_name}</td>
                                         <td>{item.warehouse_name}</td>
+                                        <td>{item.warehouse_shelf}</td>
                                         <td>{item.description}</td>
+                                        <td>{item.handler_name}</td>
                                         </tr>
                                     ))}
                                 </tbody>
