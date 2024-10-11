@@ -4,72 +4,72 @@ import { Table, Form, Button, Alert, InputGroup, Container, Row, Col } from 'rea
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
-function ManufacturerManagement() {
-    const [manufacturers, setManufacturers] = useState([]);
-    const [newManufacturer, setNewManufacturer] = useState('');
+function ShelfManagement() {
+    const [shelfs, setShelfs] = useState([]);
+    const [newShelf, setNewShelf] = useState('');
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
 
     useEffect(() => {
-        fetchManufacturers();
+        fetchShelfs();
     }, []);
 
-    const fetchManufacturers = async () => {
+    const fetchShelfs = async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/api/manufacturers`);
-            setManufacturers(response.data);
+            const response = await axios.get(`${API_BASE_URL}/api/shelfs`);
+            setShelfs(response.data);
         } catch (error) {
-            console.error('Error fetching manufacturers:', error);
-            setError('제조사 목록을 불러오는데 실패했습니다.');
+            console.error('Error fetching shelfs:', error);
+            setError('위치 목록을 불러오는데 실패했습니다.');
         }
     };
 
-    const handleAddManufacturer = async (e) => {
+    const handleAddShelf = async (e) => {
         e.preventDefault();
         setError(null);
         setSuccess(null);
         try {
-            const response = await axios.post(`${API_BASE_URL}/api/manufacturers`, { manufacturer: newManufacturer });
-            setManufacturers([...manufacturers, response.data]);
-            setNewManufacturer('');
-            setSuccess('제조사가 추가되었습니다.');
+            const response = await axios.post(`${API_BASE_URL}/api/shelfs`, { shelf: newShelf });
+            setShelfs([...shelfs, response.data]);
+            setNewShelf('');
+            setSuccess('위치가 추가되었습니다.');
         } catch (error) {
-            console.error('Error adding manufacturer:', error);
-            setError('제조사 추가에 실패했습니다.');
+            console.error('Error adding shelf:', error);
+            setError('위치 추가에 실패했습니다.');
         }
-      };
+    };
     
-    const handleDeleteManufacturer = async (id) => {
+    const handleDeleteShelf = async (id) => {
         setError(null);
         setSuccess(null);
         try {
-            await axios.delete(`${API_BASE_URL}/api/manufacturers/${id}`);
-            setManufacturers(manufacturers.filter(m => m.id !== id));
-            setSuccess('제조사가 삭제되었습니다.');
+            await axios.delete(`${API_BASE_URL}/api/shelfs/${id}`);
+            setShelfs(shelfs.filter(m => m.id !== id));
+            setSuccess('위치가 삭제되었습니다.');
         } catch (error) {
-            console.error('Error deleting manufacturer:', error);
-            setError('제조사 삭제에 실패했습니다.');
+            console.error('Error deleting shelf:', error);
+            setError('위치 삭제에 실패했습니다.');
         }
-      };
+    };
 
     return (
         <Container>
             <Row className="mb-3">
                 <Col>
-                    <h2>메이커 관리</h2>
+                    <h2>위치 관리</h2>
                 </Col>
             </Row>
             {error && <Alert variant="danger">{error}</Alert>}
             {success && <Alert variant="success">{success}</Alert>}
             <Row className="mb-3">
                 <Col>
-                    <Form onSubmit={handleAddManufacturer}>
+                    <Form onSubmit={handleAddShelf}>
                         <InputGroup>
                             <Form.Control
                                 type="text"
-                                placeholder="새 제조사 이름"
-                                value={newManufacturer}
-                                onChange={(e) => setNewManufacturer(e.target.value)}
+                                placeholder="새 위치 이름"
+                                value={newShelf}
+                                onChange={(e) => setNewShelf(e.target.value)}
                                 required
                             />
                             <Button variant="primary" type="submit">
@@ -84,19 +84,19 @@ function ManufacturerManagement() {
                     <Table striped bordered hover className="text-center">
                         <thead>
                             <tr>
-                                <th>제조사</th>
+                                <th>위치</th>
                                 <th>작업</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {manufacturers.map((m) => (
+                            {shelfs.map((m) => (
                                 <tr key={m.id}>
-                                    <td>{m.manufacturer}</td>
+                                    <td>{m.shelf}</td>
                                     <td>
                                         <Button 
                                             variant="danger" 
                                             size="sm" 
-                                            onClick={() => handleDeleteManufacturer(m.id)}
+                                            onClick={() => handleDeleteShelf(m.id)}
                                         >
                                             삭제
                                         </Button>
@@ -111,4 +111,4 @@ function ManufacturerManagement() {
     );
 }
 
-export default ManufacturerManagement;
+export default ShelfManagement;

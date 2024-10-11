@@ -21,11 +21,14 @@ function InboundForm() {
         total_quantity: '',
         handler_name: '',
         warehouse_name: '',
+        warehouse_shelf: '',
         description: ''
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [manufacturers, setManufacturers] = useState([]);
+    const [warehouses, setWarehouses] = useState([]);
+    const [shelfs, setShelfs] = useState([]);
 
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
@@ -36,6 +39,8 @@ function InboundForm() {
             handler_name: user ? user.handler_name : ''
         }));
         fetchManufacturers();
+        fetchWarehouses();
+        fetchShelfs();
     }, []);
 
     const fetchManufacturers = async () => {
@@ -45,6 +50,26 @@ function InboundForm() {
         } catch (error) {
             console.error('Error fetching manufacturers:', error);
             setError('제조사 목록을 불러오는데 실패했습니다.');
+        }
+    };
+
+    const fetchWarehouses = async () => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/api/warehouses`);
+            setWarehouses(response.data);
+        } catch (error) {
+            console.error('Error fetching warehouses:', error);
+            setError('창고 목록을 불러오는데 실패했습니다.');
+        }
+    };
+
+    const fetchShelfs = async () => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/api/shelfs`);
+            setShelfs(response.data);
+        } catch (error) {
+            console.error('Error fetching shelfs:', error);
+            setError('위치 목록을 불러오는데 실패했습니다.');
         }
     };
 
@@ -60,6 +85,20 @@ function InboundForm() {
         setFormData(prevData => ({
             ...prevData,
             manufacturer: manufacturer
+        }));
+    };
+
+    const handleWarehouseSelect = (warehouse) => {
+        setFormData(prevData => ({
+            ...prevData,
+            warehouse: warehouse
+        }));
+    };
+
+    const handleShelfSelect = (shelf) => {
+        setFormData(prevData => ({
+            ...prevData,
+            shelf: shelf
         }));
     };
 
@@ -165,15 +204,45 @@ function InboundForm() {
                         </Col>                        
                     </Form.Group>
                     <Form.Group as={Row} className="mb-3 align-items-center">
-                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>창고명</Form.Label>
+                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>창고</Form.Label>
                         <Col xs={9} sm={9} md={10}>
-                            <Form.Control
-                                type="text"
-                                name="warehouse_name"
-                                value={formData.warehouse_name}
-                                onChange={handleChange}
-                                required
-                            />
+                            <Dropdown>
+                                <Dropdown.Toggle variant="outline-secondary" id="dropdown-warehouse">
+                                    {formData.warehouse || "선택해주세요"}
+                                </Dropdown.Toggle>
+
+                                <Dropdown.Menu>
+                                    {warehouses.map((m) => (
+                                        <Dropdown.Item 
+                                            key={m.id} 
+                                            onClick={() => handleWarehouseSelect(m.warehouse)}
+                                        >
+                                            {m.warehouse}
+                                        </Dropdown.Item>
+                                    ))}
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </Col>
+                    </Form.Group>
+                    <Form.Group as={Row} className="mb-3 align-items-center">
+                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>위치</Form.Label>
+                        <Col xs={9} sm={9} md={10}>
+                            <Dropdown>
+                                <Dropdown.Toggle variant="outline-secondary" id="dropdown-shelf">
+                                    {formData.shelf || "선택해주세요"}
+                                </Dropdown.Toggle>
+
+                                <Dropdown.Menu>
+                                    {shelfs.map((m) => (
+                                        <Dropdown.Item 
+                                            key={m.id} 
+                                            onClick={() => handleShelfSelect(m.shelf)}
+                                        >
+                                            {m.shelf}
+                                        </Dropdown.Item>
+                                    ))}
+                                </Dropdown.Menu>
+                            </Dropdown>
                         </Col>
                     </Form.Group>
                     <Form.Group className="mb-3">

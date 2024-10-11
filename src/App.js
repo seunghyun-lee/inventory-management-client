@@ -8,6 +8,8 @@ import InboundHistory from './components/InboundHistory';
 import OutboundHistory from './components/OutboundHistory';
 import UserManagement from './components/UserManagement';
 import ManufacturerManagement from './components/ManufacturerManagement';
+import WarehouseManagement from './components/WarehouseManagement';
+import ShelfManagement from './components/ShelfManagement';
 import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import UserProfile from './components/UserProfile';
@@ -49,6 +51,8 @@ function App() {
                         <Route path="/inbound-history" element={<PrivateRoute><InboundHistory /></PrivateRoute>} />
                         <Route path="/outbound-history" element={<PrivateRoute><OutboundHistory /></PrivateRoute>} />
                         <Route path="/manufacturers" element={<PrivateRoute><ManufacturerManagement /></PrivateRoute>} />
+                        <Route path="/warehouses" element={<PrivateRoute><WarehouseManagement /></PrivateRoute>} />
+                        <Route path="/shelfs" element={<PrivateRoute><ShelfManagement /></PrivateRoute>} />
                         <Route path="/user-management" element={<PrivateRoute><UserManagement /></PrivateRoute>} />
                         <Route path="/profile" element={<PrivateRoute><UserProfile onLogout={handleLogout} /></PrivateRoute>} />
                     </Routes>

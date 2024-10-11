@@ -30,6 +30,8 @@ function NavbarContent() {
                         <Nav.Link as={Link} to="/inbound-history" onClick={() => setExpanded(false)}>입고 이력</Nav.Link>
                         <Nav.Link as={Link} to="/outbound-history" onClick={() => setExpanded(false)}>출고 이력</Nav.Link>
                         <Nav.Link as={Link} to="/manufacturers">메이커</Nav.Link>
+                        <Nav.Link as={Link} to="/warehouses">창고</Nav.Link>
+                        <Nav.Link as={Link} to="/shelfs">위치</Nav.Link>
                         {user.role === '관리자' && (
                             <Nav.Link as={Link} to="/user-management">사용자 관리</Nav.Link>
                         )}
