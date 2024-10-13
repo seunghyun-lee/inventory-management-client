@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table, Row, Col, Form, Button, Dropdown } from 'react-bootstrap';
+import { Table, Row, Col, Button, Dropdown } from 'react-bootstrap';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 const roleOptions = ['관리자', '직원', '퇴사', '대기'];
