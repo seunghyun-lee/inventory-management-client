@@ -60,61 +60,63 @@ function WarehouseManagement() {
     };
 
     return (
-        <Container>
-            <Row className="mb-3">
-                <Col>
-                    <h2>창고 관리</h2>
-                </Col>
-            </Row>
-            {error && <Alert variant="danger">{error}</Alert>}
-            {success && <Alert variant="success">{success}</Alert>}
-            <Row className="mb-3">
-                <Col>
-                    <Form onSubmit={handleAddWarehouse}>
-                        <InputGroup>
-                            <Form.Control
-                                type="text"
-                                placeholder="새 창고 이름"
-                                value={newWarehouse}
-                                onChange={(e) => setNewWarehouse(e.target.value)}
-                                required
-                            />
-                            <Button variant="primary" type="submit">
-                                추가
-                            </Button>
-                        </InputGroup>
-                    </Form>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <Table striped bordered hover className="text-center">
-                        <thead>
-                            <tr>
-                                <th>창고</th>
-                                <th>작업</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {warehouses.map((m) => (
-                                <tr key={m.id}>
-                                    <td>{m.warehouse}</td>
-                                    <td>
-                                        <Button 
-                                            variant="danger" 
-                                            size="sm" 
-                                            onClick={() => handleDeleteWarehouse(m.id)}
-                                        >
-                                            삭제
-                                        </Button>
-                                    </td>
+        <div style={{ paddingTop: '50px' }}>
+            <Container>
+                <Row className="mb-3">
+                    <Col>
+                        <h2>창고 관리</h2>
+                    </Col>
+                </Row>
+                {error && <Alert variant="danger">{error}</Alert>}
+                {success && <Alert variant="success">{success}</Alert>}
+                <Row className="mb-3">
+                    <Col>
+                        <Form onSubmit={handleAddWarehouse}>
+                            <InputGroup>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="새 창고 이름"
+                                    value={newWarehouse}
+                                    onChange={(e) => setNewWarehouse(e.target.value)}
+                                    required
+                                />
+                                <Button variant="primary" type="submit">
+                                    추가
+                                </Button>
+                            </InputGroup>
+                        </Form>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <Table striped bordered hover className="text-center">
+                            <thead>
+                                <tr>
+                                    <th>창고</th>
+                                    <th>작업</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                </Col>
-            </Row>
-        </Container>
+                            </thead>
+                            <tbody>
+                                {warehouses.map((m) => (
+                                    <tr key={m.id}>
+                                        <td>{m.warehouse}</td>
+                                        <td>
+                                            <Button 
+                                                variant="danger" 
+                                                size="sm" 
+                                                onClick={() => handleDeleteWarehouse(m.id)}
+                                            >
+                                                삭제
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
+            </Container>
+        </div>
     );
 }
 

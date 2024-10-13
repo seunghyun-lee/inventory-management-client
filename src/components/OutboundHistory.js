@@ -50,49 +50,50 @@ function OutboundHistory() {
     }
 
     return (
-        <Container className='mt-4'>
-            <Row>
-               <Col>
-                    <Card className='shadow-sm'>
-                        <Card.Header as="h2" className='text-center bg-primary text-white py-3'>출고 이력</Card.Header>
-                        <Card.Body>
-                            <Table striped bordered hover responsive className="text-center">
-                                <thead className='bg-light'>
-                                    <tr>
-                                        <th>출고날짜</th>
-                                        <th>납품업체</th>
-                                        <th>물품명</th>
-                                        <th>수량</th>
-                                        <th>뒷부호</th>
-                                        <th>메이커</th>
-                                        <th>창고</th>
-                                        <th>위치</th>
-                                        <th>메모</th>
-                                        <th>담당자</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+        <div style={{ paddingTop: '30px' }}>
+            <Container className='mt-4'>
+                <Card className='shadow-sm'>
+                    <Card.Header as="h5" className='text-center bg-primary text-white py-1'>출고 이력</Card.Header>
+                    <Card.Body>
+                        {/* 전체 좌우 스크롤 가능 영역 */}
+                        <div style={{ overflowX: 'auto' }}>
+                            {/* 고정된 헤더 영역 */}
+                            <div style={{ minWidth: '1200px' }}>
+                                <Row className="bg-light font-weight-bold text-center py-2">
+                                    <Col>출고날짜</Col>
+                                    <Col>납품업체</Col>
+                                    <Col>물품명</Col>
+                                    <Col>수량</Col>
+                                    <Col>뒷부호</Col>
+                                    <Col>메이커</Col>
+                                    <Col>창고</Col>
+                                    <Col>위치</Col>
+                                    <Col>메모</Col>
+                                    <Col>담당자</Col>
+                                </Row>
+                                {/* 상하 스크롤 가능한 데이터 영역 */}
+                                <div style={{ overflowY: 'auto', overflowX: 'hidden', maxHeight: '400px' }}>
                                     {outboundHistory.map((item, index) => (
-                                        <tr key={index}>
-                                        <td>{item.date}</td>
-                                        <td>{item.client}</td>
-                                        <td>{item.item_name}</td>
-                                        <td>{item.total_quantity}</td>
-                                        <td>{item.item_subname}</td>
-                                        <td>{item.manufacturer}</td>
-                                        <td>{item.warehouse_name}</td>
-                                        <td>{item.warehouse_shelf}</td>
-                                        <td>{item.description}</td>
-                                        <td>{item.handler_name}</td>
-                                        </tr>
+                                        <Row key={index} className="text-center align-items-center py-2 border-bottom">
+                                            <Col>{item.date}</Col>
+                                            <Col>{item.client}</Col>
+                                            <Col>{item.item_name}</Col>
+                                            <Col>{item.total_quantity}</Col>
+                                            <Col>{item.item_subname}</Col>
+                                            <Col>{item.manufacturer}</Col>
+                                            <Col>{item.warehouse_name}</Col>
+                                            <Col>{item.warehouse_shelf}</Col>
+                                            <Col>{item.description}</Col>
+                                            <Col>{item.handler_name}</Col>
+                                        </Row>
                                     ))}
-                                </tbody>
-                            </Table>
-                        </Card.Body>
-                    </Card>
-               </Col> 
-            </Row>
-        </Container>
+                                </div>
+                            </div>
+                        </div>
+                    </Card.Body>
+                </Card>
+            </Container>
+        </div>        
     );
 }
 

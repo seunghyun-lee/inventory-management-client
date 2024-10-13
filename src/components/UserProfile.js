@@ -69,81 +69,83 @@ function UserProfile({ onLogout }) {
     if (!user) return null;
 
     return (
-        <Card>
-            <Card.Header as="h2">사용자 정보</Card.Header>
-            <Card.Body>
-                {error && <Alert variant="danger">{error}</Alert>}
-                {success && <Alert variant="success">{success}</Alert>}
-                <Form>
-                    <Form.Group className="mb-3">
-                        <Form.Label>사용자 ID</Form.Label>
-                        <Form.Control 
-                            type="text" 
-                            value={user.username} 
-                            readOnly 
-                            style={readonlyStyle}
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>이름</Form.Label>
-                        <Form.Control 
-                            type="text" 
-                            value={user.handler_name} 
-                            onChange={(e) => setUser({...user, handler_name: e.target.value})}
-                            readOnly={!editMode}
-                            style={readonlyStyle}
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>이메일</Form.Label>
-                        <Form.Control 
-                            type="email" 
-                            value={user.email} 
-                            onChange={(e) => setUser({...user, email: e.target.value})}
-                            readOnly={!editMode}
-                            style={editMode ? {} : readonlyStyle}
-                        />
-                    </Form.Group>
-                    {editMode && (
-                        <>
-                            <Form.Group className="mb-3">
-                                <Form.Label>현재 비밀번호</Form.Label>
-                                <Form.Control 
-                                    type="password" 
-                                    value={currentPassword}
-                                    onChange={(e) => setCurrentPassword(e.target.value)}
-                                    required
-                                />
-                            </Form.Group>
-                            <Form.Group className="mb-3">
-                                <Form.Label>새 비밀번호</Form.Label>
-                                <Form.Control 
-                                    type="password" 
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    placeholder="변경하지 않으려면 비워두세요"
-                                />
-                            </Form.Group>
-                            <Form.Group className="mb-3">
-                                <Form.Label>새 비밀번호 확인</Form.Label>
-                                <Form.Control 
-                                    type="password" 
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                />
-                            </Form.Group>
-                        </>
-                    )}
-                    {editMode ? (
-                        <Button variant="primary" onClick={handleSave}>패스워드 저장</Button>
-                      ) : (
-                        <Button variant="secondary" onClick={handleEdit}>패스워드 수정</Button>
-                    )}
-                </Form>
-                <Button variant="danger" className="mt-3" onClick={handleLogout}>로그아웃</Button>
-            </Card.Body>
-        </Card>
-      );
+        <div style={{ paddingTop: '50px' }}>            
+            <Card>
+                <Card.Header as="h2">사용자 정보</Card.Header>
+                <Card.Body>
+                    {error && <Alert variant="danger">{error}</Alert>}
+                    {success && <Alert variant="success">{success}</Alert>}
+                    <Form>
+                        <Form.Group className="mb-3">
+                            <Form.Label>사용자 ID</Form.Label>
+                            <Form.Control 
+                                type="text" 
+                                value={user.username} 
+                                readOnly 
+                                style={readonlyStyle}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>이름</Form.Label>
+                            <Form.Control 
+                                type="text" 
+                                value={user.handler_name} 
+                                onChange={(e) => setUser({...user, handler_name: e.target.value})}
+                                readOnly={!editMode}
+                                style={readonlyStyle}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>이메일</Form.Label>
+                            <Form.Control 
+                                type="email" 
+                                value={user.email} 
+                                onChange={(e) => setUser({...user, email: e.target.value})}
+                                readOnly={!editMode}
+                                style={editMode ? {} : readonlyStyle}
+                            />
+                        </Form.Group>
+                        {editMode && (
+                            <>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>현재 비밀번호</Form.Label>
+                                    <Form.Control 
+                                        type="password" 
+                                        value={currentPassword}
+                                        onChange={(e) => setCurrentPassword(e.target.value)}
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>새 비밀번호</Form.Label>
+                                    <Form.Control 
+                                        type="password" 
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        placeholder="변경하지 않으려면 비워두세요"
+                                    />
+                                </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>새 비밀번호 확인</Form.Label>
+                                    <Form.Control 
+                                        type="password" 
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                    />
+                                </Form.Group>
+                            </>
+                        )}
+                        {editMode ? (
+                            <Button variant="primary" onClick={handleSave}>패스워드 저장</Button>
+                        ) : (
+                            <Button variant="secondary" onClick={handleEdit}>패스워드 수정</Button>
+                        )}
+                    </Form>
+                    <Button variant="danger" className="mt-3" onClick={handleLogout}>로그아웃</Button>
+                </Card.Body>
+            </Card>
+        </div>
+    );
 }
 
 export default UserProfile;

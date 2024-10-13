@@ -60,61 +60,63 @@ function ShelfManagement() {
     };
 
     return (
-        <Container>
-            <Row className="mb-3">
-                <Col>
-                    <h2>위치 관리</h2>
-                </Col>
-            </Row>
-            {error && <Alert variant="danger">{error}</Alert>}
-            {success && <Alert variant="success">{success}</Alert>}
-            <Row className="mb-3">
-                <Col>
-                    <Form onSubmit={handleAddShelf}>
-                        <InputGroup>
-                            <Form.Control
-                                type="text"
-                                placeholder="새 위치 이름"
-                                value={newShelf}
-                                onChange={(e) => setNewShelf(e.target.value)}
-                                required
-                            />
-                            <Button variant="primary" type="submit">
-                                추가
-                            </Button>
-                        </InputGroup>
-                    </Form>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <Table striped bordered hover className="text-center">
-                        <thead>
-                            <tr>
-                                <th>위치</th>
-                                <th>작업</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {shelfs.map((m) => (
-                                <tr key={m.id}>
-                                    <td>{m.shelf}</td>
-                                    <td>
-                                        <Button 
-                                            variant="danger" 
-                                            size="sm" 
-                                            onClick={() => handleDeleteShelf(m.id)}
-                                        >
-                                            삭제
-                                        </Button>
-                                    </td>
+        <div style={{ paddingTop: '50px' }}>
+            <Container>
+                <Row className="mb-3">
+                    <Col>
+                        <h2>위치 관리</h2>
+                    </Col>
+                </Row>
+                {error && <Alert variant="danger">{error}</Alert>}
+                {success && <Alert variant="success">{success}</Alert>}
+                <Row className="mb-3">
+                    <Col>
+                        <Form onSubmit={handleAddShelf}>
+                            <InputGroup>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="새 위치 이름"
+                                    value={newShelf}
+                                    onChange={(e) => setNewShelf(e.target.value)}
+                                    required
+                                />
+                                <Button variant="primary" type="submit">
+                                    추가
+                                </Button>
+                            </InputGroup>
+                        </Form>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <Table striped bordered hover className="text-center">
+                            <thead>
+                                <tr>
+                                    <th>위치</th>
+                                    <th>작업</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                </Col>
-            </Row>
-        </Container>
+                            </thead>
+                            <tbody>
+                                {shelfs.map((m) => (
+                                    <tr key={m.id}>
+                                        <td>{m.shelf}</td>
+                                        <td>
+                                            <Button 
+                                                variant="danger" 
+                                                size="sm" 
+                                                onClick={() => handleDeleteShelf(m.id)}
+                                            >
+                                                삭제
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
+            </Container>
+        </div>
     );
 }
 

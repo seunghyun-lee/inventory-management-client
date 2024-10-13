@@ -160,166 +160,168 @@ function InboundForm() {
     };
 
     return (
-        <Card>
-            <Card.Header as="h2">입고 등록</Card.Header>
-            <Card.Body>
-                {error && <Alert variant="danger">{error}</Alert>}
-                <Form onSubmit={handleSubmit}>
-                    <Form.Group as={Row} className="mb-3 align-items-center">
-                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>날짜</Form.Label>
-                        <Col xs={9} sm={9} md={10}>
-                            <Form.Control
-                                type="date"
-                                name="date"
-                                value={formData.date}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Col>
-                    </Form.Group>
-                    <Form.Group as={Row} className="mb-3 align-items-center">
-                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>공급업체</Form.Label>
-                        <Col xs={9} sm={9} md={10}>
-                            <Form.Control
-                                type="text"
-                                name="supplier"
-                                value={formData.supplier}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Col>                        
-                    </Form.Group>
-                    <Form.Group as={Row} className="mb-3 align-items-center">
-                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>물품명</Form.Label>
-                        <Col xs={9} sm={9} md={10}>
-                            <Form.Control
-                                type="text"
-                                name="item_name"
-                                value={formData.item_name}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Col>                        
-                    </Form.Group>
-                    <Form.Group as={Row} className="mb-3 align-items-center">
-                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>수량</Form.Label>
-                        <Col xs={9} sm={9} md={10}>
-                            <Form.Control
-                                type="number"
-                                name="total_quantity"
-                                value={formData.total_quantity}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Col>                        
-                    </Form.Group>
-                    <Form.Group as={Row} className="mb-3 align-items-center">
-                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>뒷부호</Form.Label>
-                        <Col xs={9} sm={9} md={10}>
-                            <Form.Control
-                                type="text"
-                                name="item_subname"
-                                value={formData.item_subname}
-                                onChange={handleChange}
-                            />
-                        </Col>                        
-                    </Form.Group>
-                    <Form.Group as={Row} className="mb-3 align-items-center">
-                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>메이커</Form.Label>
-                        <Col xs={9} sm={9} md={10}>
-                            <Dropdown>
-                                <Dropdown.Toggle variant="outline-secondary" id="dropdown-manufacturer">
-                                    {formData.manufacturer || "선택해주세요"}
-                                </Dropdown.Toggle>
+        <div style={{ paddingTop: '60px' }}>
+            <Card>
+                <Card.Header as="h2">입고 등록</Card.Header>
+                <Card.Body>
+                    {error && <Alert variant="danger">{error}</Alert>}
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group as={Row} className="mb-3 align-items-center">
+                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>날짜</Form.Label>
+                            <Col xs={9} sm={9} md={10}>
+                                <Form.Control
+                                    type="date"
+                                    name="date"
+                                    value={formData.date}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row} className="mb-3 align-items-center">
+                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>공급업체</Form.Label>
+                            <Col xs={9} sm={9} md={10}>
+                                <Form.Control
+                                    type="text"
+                                    name="supplier"
+                                    value={formData.supplier}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </Col>                        
+                        </Form.Group>
+                        <Form.Group as={Row} className="mb-3 align-items-center">
+                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>물품명</Form.Label>
+                            <Col xs={9} sm={9} md={10}>
+                                <Form.Control
+                                    type="text"
+                                    name="item_name"
+                                    value={formData.item_name}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </Col>                        
+                        </Form.Group>
+                        <Form.Group as={Row} className="mb-3 align-items-center">
+                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>수량</Form.Label>
+                            <Col xs={9} sm={9} md={10}>
+                                <Form.Control
+                                    type="number"
+                                    name="total_quantity"
+                                    value={formData.total_quantity}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </Col>                        
+                        </Form.Group>
+                        <Form.Group as={Row} className="mb-3 align-items-center">
+                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>뒷부호</Form.Label>
+                            <Col xs={9} sm={9} md={10}>
+                                <Form.Control
+                                    type="text"
+                                    name="item_subname"
+                                    value={formData.item_subname}
+                                    onChange={handleChange}
+                                />
+                            </Col>                        
+                        </Form.Group>
+                        <Form.Group as={Row} className="mb-3 align-items-center">
+                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>메이커</Form.Label>
+                            <Col xs={9} sm={9} md={10}>
+                                <Dropdown>
+                                    <Dropdown.Toggle variant="outline-secondary" id="dropdown-manufacturer">
+                                        {formData.manufacturer || "선택해주세요"}
+                                    </Dropdown.Toggle>
 
-                                <Dropdown.Menu>
-                                    {manufacturers.map((m) => (
-                                        <Dropdown.Item 
-                                            key={m.id} 
-                                            onClick={() => handleManufacturerSelect(m.manufacturer)}
-                                        >
-                                            {m.manufacturer}
-                                        </Dropdown.Item>
-                                    ))}
-                                </Dropdown.Menu>
-                            </Dropdown>
-                        </Col>                        
-                    </Form.Group>
-                    <Form.Group as={Row} className="mb-3 align-items-center">
-                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>창고</Form.Label>
-                        <Col xs={9} sm={9} md={10}>
-                            <Dropdown>
-                                <Dropdown.Toggle variant="outline-secondary" id="dropdown-warehouse">
-                                    {formData.warehouse_name || "선택해주세요"}
-                                </Dropdown.Toggle>
+                                    <Dropdown.Menu>
+                                        {manufacturers.map((m) => (
+                                            <Dropdown.Item 
+                                                key={m.id} 
+                                                onClick={() => handleManufacturerSelect(m.manufacturer)}
+                                            >
+                                                {m.manufacturer}
+                                            </Dropdown.Item>
+                                        ))}
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            </Col>                        
+                        </Form.Group>
+                        <Form.Group as={Row} className="mb-3 align-items-center">
+                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>창고</Form.Label>
+                            <Col xs={9} sm={9} md={10}>
+                                <Dropdown>
+                                    <Dropdown.Toggle variant="outline-secondary" id="dropdown-warehouse">
+                                        {formData.warehouse_name || "선택해주세요"}
+                                    </Dropdown.Toggle>
 
-                                <Dropdown.Menu>
-                                    {Array.isArray(warehouses) && warehouses.map((m) => (
-                                        <Dropdown.Item 
-                                            key={m.id} 
-                                            onClick={() => handleWarehouseSelect(m.warehouse)}
-                                        >
-                                            {m.warehouse}
-                                        </Dropdown.Item>
-                                    ))}
-                                </Dropdown.Menu>
-                            </Dropdown>
-                        </Col>
-                    </Form.Group>
-                    <Form.Group as={Row} className="mb-3 align-items-center">
-                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>위치</Form.Label>
-                        <Col xs={9} sm={9} md={10}>
-                            <Dropdown>
-                                <Dropdown.Toggle variant="outline-secondary" id="dropdown-shelf">
-                                    {formData.warehouse_shelf || "선택해주세요"}
-                                </Dropdown.Toggle>
+                                    <Dropdown.Menu>
+                                        {Array.isArray(warehouses) && warehouses.map((m) => (
+                                            <Dropdown.Item 
+                                                key={m.id} 
+                                                onClick={() => handleWarehouseSelect(m.warehouse)}
+                                            >
+                                                {m.warehouse}
+                                            </Dropdown.Item>
+                                        ))}
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row} className="mb-3 align-items-center">
+                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>위치</Form.Label>
+                            <Col xs={9} sm={9} md={10}>
+                                <Dropdown>
+                                    <Dropdown.Toggle variant="outline-secondary" id="dropdown-shelf">
+                                        {formData.warehouse_shelf || "선택해주세요"}
+                                    </Dropdown.Toggle>
 
-                                <Dropdown.Menu>
-                                    {Array.isArray(shelfs) && shelfs.map((m) => (
-                                        <Dropdown.Item 
-                                            key={m.id} 
-                                            onClick={() => handleShelfSelect(m.shelf)}
-                                        >
-                                            {m.shelf}
-                                        </Dropdown.Item>
-                                    ))}
-                                </Dropdown.Menu>
-                            </Dropdown>
-                        </Col>
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>메모</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            name="description"
-                            value={formData.description}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-                    <Form.Group as={Row} className="mb-3 align-items-center">
-                        <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>담당자</Form.Label>
-                        <Col xs={9} sm={9} md={10}>
+                                    <Dropdown.Menu>
+                                        {Array.isArray(shelfs) && shelfs.map((m) => (
+                                            <Dropdown.Item 
+                                                key={m.id} 
+                                                onClick={() => handleShelfSelect(m.shelf)}
+                                            >
+                                                {m.shelf}
+                                            </Dropdown.Item>
+                                        ))}
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            </Col>
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>메모</Form.Label>
                             <Form.Control
-                                type="text"
-                                name="handler_name"
-                                value={formData.handler_name}
+                                as="textarea"
+                                name="description"
+                                value={formData.description}
                                 onChange={handleChange}
-                                required
-                                readOnly
-                                style={readonlyStyle}
                             />
-                        </Col>
-                    </Form.Group>
-                    <Row className="justify-content-center mt-4">
-                        <Col xs={12} sm={6} md={4} lg={3} className="d-flex justify-content-center">
-                            <Button variant="primary" type="submit"  disabled={loading}>
-                            {loading ? '처리 중...' : '입고 등록'}
-                            </Button>
-                        </Col>
-                    </Row>
-                </Form>
-            </Card.Body>
-        </Card>
+                        </Form.Group>
+                        <Form.Group as={Row} className="mb-3 align-items-center">
+                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>담당자</Form.Label>
+                            <Col xs={9} sm={9} md={10}>
+                                <Form.Control
+                                    type="text"
+                                    name="handler_name"
+                                    value={formData.handler_name}
+                                    onChange={handleChange}
+                                    required
+                                    readOnly
+                                    style={readonlyStyle}
+                                />
+                            </Col>
+                        </Form.Group>
+                        <Row className="justify-content-center mt-4">
+                            <Col xs={12} sm={6} md={4} lg={3} className="d-flex justify-content-center">
+                                <Button variant="primary" type="submit"  disabled={loading}>
+                                {loading ? '처리 중...' : '입고 등록'}
+                                </Button>
+                            </Col>
+                        </Row>
+                    </Form>
+                </Card.Body>
+            </Card>
+        </div>        
     );
 }
 

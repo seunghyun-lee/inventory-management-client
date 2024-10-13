@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table, Form, Button, Dropdown } from 'react-bootstrap';
+import { Table, Row, Col, Form, Button, Dropdown } from 'react-bootstrap';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 const roleOptions = ['관리자', '직원', '퇴사', '대기'];
@@ -48,51 +48,58 @@ function UserManagement() {
     if (error) return <div>{error}</div>;
     
     return (
-        <Table striped bordered hover className="text-center">
-            <thead>
-                <tr>
-                <th>아이디</th>
-                <th>이름</th>
-                <th>역할</th>
-                <th>작업</th>
-                </tr>
-            </thead>
-            <tbody>
-                {users.map(user => (
-                <tr key={user.id}>
-                    <td>{user.username}</td>
-                    <td>{user.handler_name}</td>
-                    <td>
-                        <Dropdown>
-                            <Dropdown.Toggle variant="outline-secondary" id={`dropdown-${user.id}`}>
-                                {user.role}
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                {roleOptions.map(role => (
-                                <Dropdown.Item 
-                                    key={role} 
-                                    onClick={() => handleRoleChange(user.id, role)}
-                                    active={user.role === role}
-                                >
-                                    {role}
-                                </Dropdown.Item>
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </td>
-                    <td>
-                        <Button
-                            variant={user.isModified ? "primary" : "secondary"}
-                            onClick={() => handleUpdate(user)}
-                            disabled={!user.isModified}
-                        >
-                        수정
-                        </Button>
-                    </td>
-                </tr>
-                ))}
-            </tbody>
-        </Table>
+        <div style={{ paddingTop: '50px' }}>
+            <Row className="align-items-center mb-4">
+                <Col>
+                    <h2 className="mb-0">사용자 권한 관리</h2>
+                </Col>
+            </Row>
+            <Table striped bordered hover className="text-center">
+                <thead>
+                    <tr>
+                    <th>아이디</th>
+                    <th>이름</th>
+                    <th>역할</th>
+                    <th>작업</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {users.map(user => (
+                    <tr key={user.id}>
+                        <td>{user.username}</td>
+                        <td>{user.handler_name}</td>
+                        <td>
+                            <Dropdown>
+                                <Dropdown.Toggle variant="outline-secondary" id={`dropdown-${user.id}`}>
+                                    {user.role}
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    {roleOptions.map(role => (
+                                    <Dropdown.Item 
+                                        key={role} 
+                                        onClick={() => handleRoleChange(user.id, role)}
+                                        active={user.role === role}
+                                    >
+                                        {role}
+                                    </Dropdown.Item>
+                                    ))}
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </td>
+                        <td>
+                            <Button
+                                variant={user.isModified ? "primary" : "secondary"}
+                                onClick={() => handleUpdate(user)}
+                                disabled={!user.isModified}
+                            >
+                            수정
+                            </Button>
+                        </td>
+                    </tr>
+                    ))}
+                </tbody>
+            </Table>
+        </div>
     );
 }
 

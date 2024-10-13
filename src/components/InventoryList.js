@@ -83,7 +83,7 @@ function InventoryList() {
     }
 
     return (
-        <div style={{ paddingTop: '70px' }}>
+        <div style={{ paddingTop: '60px' }}>
             <Row className="align-items-center mb-4">
                 <Col>
                     <h2 className="mb-0">재고 목록</h2>
