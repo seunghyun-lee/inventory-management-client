@@ -55,10 +55,18 @@ function InventoryList() {
             const response = await axios.get(`${API_BASE_URL}/api/export-excel`, {
                 responseType: 'blob', // 중요: 응답을 blob으로 받습니다.
             });
-            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-                window.navigator.msSaveOrOpenBlob(response.data, 'inventory_report.xlsx');
+            const blob = response.data;
+
+            if (window.Android) {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    const base64data = reader.result.split(',')[1];  // base64 데이터 추출
+                    window.Android.saveBase64AsFile(base64data, 'inventory_report.xlsx');  // Android로 전달
+                };
+                reader.readAsDataURL(blob);  // Blob을 Base64로 변환
             } else {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
+                // 브라우저에서 실행되는 경우
+                const url = window.URL.createObjectURL(new Blob([blob]));
                 const link = document.createElement('a');
                 link.href = url;
                 link.setAttribute('download', 'inventory_report.xlsx');
