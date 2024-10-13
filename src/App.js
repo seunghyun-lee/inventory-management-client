@@ -49,7 +49,7 @@ function App() {
                         <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
                         <Route path="/signup" element={<SignupPage />} />
                         <Route path="/reset-password" element={<PasswordReset />} />
-                        <Route path="/reset-password/:token" component={ResetPassword} />
+                        <Route path="/reset-password/:token" element={<ResetPassword />} />
                         <Route path="/" element={<PrivateRoute><InventoryList /></PrivateRoute>} />
                         <Route path="/inbound" element={<PrivateRoute><InboundForm /></PrivateRoute>} />
                         <Route path="/outbound/:itemId?" element={<PrivateRoute><OutboundForm /></PrivateRoute>} />
@@ -60,7 +60,7 @@ function App() {
                         <Route path="/shelfs" element={<PrivateRoute><ShelfManagement /></PrivateRoute>} />
                         <Route path="/user-management" element={<PrivateRoute><UserManagement /></PrivateRoute>} />
                         <Route path="/profile" element={<PrivateRoute><UserProfile onLogout={handleLogout} /></PrivateRoute>} />
-                        <Route component={NotFound} />
+                        <Route path="*" element={<NotFound />} />
                     </Routes>
                 </Container>
             </div>
