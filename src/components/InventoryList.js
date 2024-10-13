@@ -55,13 +55,17 @@ function InventoryList() {
             const response = await axios.get(`${API_BASE_URL}/api/export-excel`, {
                 responseType: 'blob', // 중요: 응답을 blob으로 받습니다.
             });
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'inventory_report.xlsx');
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
+            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveOrOpenBlob(response.data, 'inventory_report.xlsx');
+            } else {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'inventory_report.xlsx');
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            }
         } catch (error) {
             console.error('Error downloading Excel file:', error);
             setError('Excel 파일 다운로드에 실패했습니다.');
