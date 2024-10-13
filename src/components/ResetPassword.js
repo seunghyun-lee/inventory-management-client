@@ -5,11 +5,11 @@ import axios from 'axios';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
 function ResetPassword() {
+    const { token } = useParams();
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
-    const { token } = useParams();
 
     const handleSubmit = async (e) => {
         e.preventDefault();

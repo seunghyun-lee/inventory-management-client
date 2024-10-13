@@ -16,6 +16,7 @@ import UserProfile from './components/UserProfile';
 import NavbarContent from './components/NavbarContent';
 import PasswordReset from './components/PasswordReset';
 import ResetPassword from './components/ResetPassword';
+import NotFound from './components/NotFound';
 
 function PrivateRoute({ children }) {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -59,6 +60,7 @@ function App() {
                         <Route path="/shelfs" element={<PrivateRoute><ShelfManagement /></PrivateRoute>} />
                         <Route path="/user-management" element={<PrivateRoute><UserManagement /></PrivateRoute>} />
                         <Route path="/profile" element={<PrivateRoute><UserProfile onLogout={handleLogout} /></PrivateRoute>} />
+                        <Route component={NotFound} />
                     </Routes>
                 </Container>
             </div>
