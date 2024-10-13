@@ -45,6 +45,7 @@ function UserProfile({ onLogout }) {
             const response = await axios.put(`${API_BASE_URL}/api/users/${user.id}/profile`, {
                 username: user.username,
                 handler_name: user.handler_name,
+                email: user.email,
                 currentPassword: currentPassword,
                 newPassword: newPassword || undefined
             });
@@ -93,6 +94,16 @@ function UserProfile({ onLogout }) {
                             style={readonlyStyle}
                         />
                     </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>이메일</Form.Label>
+                        <Form.Control 
+                            type="email" 
+                            value={user.email} 
+                            onChange={(e) => setUser({...user, email: e.target.value})}
+                            readOnly={!editMode}
+                            style={editMode ? {} : readonlyStyle}
+                        />
+                    </Form.Group>
                     {editMode && (
                         <>
                             <Form.Group className="mb-3">
@@ -124,9 +135,9 @@ function UserProfile({ onLogout }) {
                         </>
                     )}
                     {editMode ? (
-                        <Button variant="primary" onClick={handleSave}>저장</Button>
+                        <Button variant="primary" onClick={handleSave}>패스워드 저장</Button>
                       ) : (
-                        <Button variant="secondary" onClick={handleEdit}>수정</Button>
+                        <Button variant="secondary" onClick={handleEdit}>패스워드 수정</Button>
                     )}
                 </Form>
                 <Button variant="danger" className="mt-3" onClick={handleLogout}>로그아웃</Button>

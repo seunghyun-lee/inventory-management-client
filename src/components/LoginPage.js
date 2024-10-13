@@ -75,6 +75,8 @@ function LoginPage({ onLogin }) {
                     </Card>
                     <div className="mt-3">
                         <Link to="/signup">회원가입</Link>
+                        <br />
+                        <Link to="/reset-password">비밀번호 재설정</Link>
                     </div>
                 </Col>
             </Row>

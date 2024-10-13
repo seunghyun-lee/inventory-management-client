@@ -14,6 +14,7 @@ import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import UserProfile from './components/UserProfile';
 import NavbarContent from './components/NavbarContent';
+import PasswordReset from './components/PasswordReset';
 
 function PrivateRoute({ children }) {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -45,6 +46,7 @@ function App() {
                     <Routes>
                         <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
                         <Route path="/signup" element={<SignupPage />} />
+                        <Route path="/reset-password" element={<PasswordReset />} />
                         <Route path="/" element={<PrivateRoute><InventoryList /></PrivateRoute>} />
                         <Route path="/inbound" element={<PrivateRoute><InboundForm /></PrivateRoute>} />
                         <Route path="/outbound/:itemId?" element={<PrivateRoute><OutboundForm /></PrivateRoute>} />
