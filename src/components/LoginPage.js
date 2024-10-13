@@ -77,11 +77,16 @@ function LoginPage({ onLogin }) {
                         <Link to="/signup">회원가입</Link>
                         <br />
                         <Link to="/reset-password">비밀번호 재설정</Link>
+                        <br />
                     </div>
                 </Col>
             </Row>
-        </Container>
-        
+            <div className="fixed-bottom text-center mb-3">
+                <a href="https://drive.google.com/file/d/137fVRmzp73IHaJA83is7J3pgKkgeNXZa/view?usp=sharing" target="_blank" rel="noopener noreferrer">
+                    앱 다운로드
+                </a>
+            </div>
+        </Container>        
     );
 }
 
