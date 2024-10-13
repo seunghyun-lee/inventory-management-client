@@ -124,6 +124,14 @@ function SignupPage() {
                         </Card>
                     </Col>
                 </Row>
+                <br /><br />
+                <div className="text-center mb-3">
+                    <span>
+                        회원가입 후 관리자에게 '직원' 권한 설정을 요청하세요. 
+                        <br />
+                        권한 설정 완료후 사용 가능하십니다.
+                    </span>
+                </div>
             </Container>
         </>        
     );
