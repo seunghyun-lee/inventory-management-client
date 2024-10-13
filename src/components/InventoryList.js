@@ -97,40 +97,42 @@ function InventoryList() {
                     </Button>
                 </Col>
             </Row>
-            <Row xs={1} md={2} lg={3} className="g-4">
-                {inventory.map((item) => (
-                    <Col key={item.id}>
-                        <Card className="h-100">
-                            <Card.Body>
-                                <Card.Title><strong>물품명:</strong> {item.item_name} <span style={{ fontSize: '0.7em' }}>{item.item_subname}</span></Card.Title>
-                                <Card.Subtitle className="mb-2 text-muted"><strong>메이커:</strong> {item.manufacturer}</Card.Subtitle>
-                                <Card.Text className="d-flex justify-content-between align-items-center mb-3">
-                                    <span className="text-start">
-                                        <strong>수량:</strong> {item.current_quantity || 0}
-                                    </span>
-                                    <span className="text-center">
-                                        <strong>창고:</strong> {item.warehouse_name || '모름'}
-                                    </span>
-                                    <span className="text-center">
-                                        <strong>위치:</strong> {item.warehouse_shelf || '모름'}
-                                    </span>
-                                </Card.Text>
-                                <Card.Text>
-                                    <strong>비고:</strong> {item.description || '없음'}
-                                </Card.Text>
-                                <div className="d-flex justify-content-between mt-3">
-                                    <Button variant="danger" size="sm" onClick={() => handleDelete(item.id)}>
-                                        삭제
-                                    </Button>
-                                    <Button variant="primary" size="sm" onClick={() => handleOutbound(item.id)}>
-                                        출고
-                                    </Button>
-                                </div>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                ))}
-            </Row>
+            <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
+                <Row xs={1} md={2} lg={3} className="g-4">
+                    {inventory.map((item) => (
+                        <Col key={item.id}>
+                            <Card className="h-100">
+                                <Card.Body>
+                                    <Card.Title><strong>물품명:</strong> {item.item_name} <span style={{ fontSize: '0.7em' }}>{item.item_subname}</span></Card.Title>
+                                    <Card.Subtitle className="mb-2 text-muted"><strong>메이커:</strong> {item.manufacturer}</Card.Subtitle>
+                                    <Card.Text className="d-flex justify-content-between align-items-center mb-3">
+                                        <span className="text-start">
+                                            <strong>수량:</strong> {item.current_quantity || 0}
+                                        </span>
+                                        <span className="text-center">
+                                            <strong>창고:</strong> {item.warehouse_name || '모름'}
+                                        </span>
+                                        <span className="text-center">
+                                            <strong>위치:</strong> {item.warehouse_shelf || '모름'}
+                                        </span>
+                                    </Card.Text>
+                                    <Card.Text>
+                                        <strong>비고:</strong> {item.description || '없음'}
+                                    </Card.Text>
+                                    <div className="d-flex justify-content-between mt-3">
+                                        <Button variant="danger" size="sm" onClick={() => handleDelete(item.id)}>
+                                            삭제
+                                        </Button>
+                                        <Button variant="primary" size="sm" onClick={() => handleOutbound(item.id)}>
+                                            출고
+                                        </Button>
+                                    </div>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    ))}
+                </Row>
+            </div>            
         </div>
     );
 }

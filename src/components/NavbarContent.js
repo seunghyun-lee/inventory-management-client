@@ -18,7 +18,7 @@ function NavbarContent() {
     };
 
     return (
-        <Navbar bg="light" expand="lg" expanded={expanded}>
+        <Navbar bg="light" expand="lg" expanded={expanded} fixed="top">
             <Container>
                 <Navbar.Brand as={Link} to="/" onClick={() => setExpanded(false)}>대광 베어링 재고 관리</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setExpanded(!expanded)} />
