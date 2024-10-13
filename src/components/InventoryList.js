@@ -83,7 +83,7 @@ function InventoryList() {
     }
 
     return (
-        <div>
+        <div style={{ paddingTop: '70px' }}>
             <Row className="align-items-center mb-4">
                 <Col>
                     <h2 className="mb-0">재고 목록</h2>
@@ -98,9 +98,9 @@ function InventoryList() {
                 </Col>
             </Row>
             <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
-                <Row xs={1} md={2} lg={3} className="g-4">
+                <Row xs={1} md={2} lg={3} className="g-4" style={{ margin: 0 }}>
                     {inventory.map((item) => (
-                        <Col key={item.id}>
+                        <Col key={item.id} className="p-2">
                             <Card className="h-100">
                                 <Card.Body>
                                     <Card.Title><strong>물품명:</strong> {item.item_name} <span style={{ fontSize: '0.7em' }}>{item.item_subname}</span></Card.Title>
