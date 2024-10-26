@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 const HOLIDAY_API_KEY = process.env.HOLIDAY_API_KEY;
-const HOLIDAY_API_BASE_URL = 'http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo';
+const HOLIDAY_API_BASE_URL = 'https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo';
 
 
 const CalendarComponent = () => {
@@ -76,10 +76,20 @@ const CalendarComponent = () => {
     const currentMonth = useMemo(() => currentDate.getMonth() + 1, [currentDate]);  
 
     const fetchHolidays = useCallback(async (year, month) => {
+        if (!HOLIDAY_API_KEY) {
+            console.error('Holiday API Key is not defined');
+            return;
+        }
         try {
             const paddedMonth = month.toString().padStart(2, '0');
             const response = await axios.get(
-                `${HOLIDAY_API_BASE_URL}?serviceKey=${HOLIDAY_API_KEY}&solYear=${year}&solMonth=${paddedMonth}&_type=json`
+                `${HOLIDAY_API_BASE_URL}?serviceKey=${HOLIDAY_API_KEY}&solYear=${year}&solMonth=${paddedMonth}&_type=json`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                }
             );
             
             const items = response.data.response.body.items;
@@ -110,6 +120,9 @@ const CalendarComponent = () => {
             setHolidays(prev => ({...prev, ...newHolidays}));
         } catch (error) {
             console.error('공휴일 데이터 조회 실패:', error);
+            if (error.response) {
+                console.error('Error response:', error.response.data);
+            }
         }
     }, []);
 
