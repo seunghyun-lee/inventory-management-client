@@ -76,6 +76,7 @@ const CalendarComponent = () => {
     const currentMonth = useMemo(() => currentDate.getMonth() + 1, [currentDate]);  
 
     const fetchHolidays = useCallback(async (year, month) => {
+        console.log('HOLIDAY_API_KEY:', HOLIDAY_API_KEY);
         if (!HOLIDAY_API_KEY) {
             console.error('Holiday API Key is not defined');
             return;
