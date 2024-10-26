@@ -1,7 +1,11 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
+import { format } from 'date-fns';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+const HOLIDAY_API_KEY = "%2FSDYjzFoUG%2B8CLE6Dh1JTDqGlvIjM8ge2R%2BFk%2FnEBY1CvYAIQHmbbTXUcQ4HUYy6a5ivZlL1c5RFKR7HL03x2w%3D%3D";
+const HOLIDAY_API_BASE_URL = 'http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo';
+
 
 const CalendarComponent = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -14,6 +18,7 @@ const CalendarComponent = () => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [error, setError] = useState(null); // 에러 메시지를 표시하기 위해 유지
     const [isLoading, setIsLoading] = useState(false); // 로딩 상태를 표시하기 위해 유지
+    const [holidays, setHolidays] = useState({});
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -66,6 +71,57 @@ const CalendarComponent = () => {
         console.log('Fetching events for period:', { startISO, endISO });
         fetchEvents(start, end);
     }, [view, currentDate]);
+
+    const currentYear = useMemo(() => currentDate.getFullYear(), [currentDate]);
+    const currentMonth = useMemo(() => currentDate.getMonth() + 1, [currentDate]);  
+
+    const fetchHolidays = useCallback(async (year, month) => {
+        try {
+            const paddedMonth = month.toString().padStart(2, '0');
+            const response = await axios.get(
+                `${HOLIDAY_API_BASE_URL}?serviceKey=${HOLIDAY_API_KEY}&solYear=${year}&solMonth=${paddedMonth}&_type=json`
+            );
+            
+            const items = response.data.response.body.items;
+            const newHolidays = {};
+            
+            if (items && items.item) {
+                // item이 배열인 경우
+                if (Array.isArray(items.item)) {
+                    items.item.forEach(item => {
+                        if (item.isHoliday === 'Y') {
+                            const locdate = item.locdate.toString();
+                            // 날짜 형식을 YYYY-MM-DD로 변환
+                            const dateKey = `${locdate.slice(0, 4)}-${locdate.slice(4, 6)}-${locdate.slice(6, 8)}`;
+                            newHolidays[dateKey] = item.dateName;
+                        }
+                    });
+                } 
+                // item이 단일 객체인 경우
+                else if (items.item.isHoliday === 'Y') {
+                    const locdate = items.item.locdate.toString();
+                    // 날짜 형식을 YYYY-MM-DD로 변환
+                    const dateKey = `${locdate.slice(0, 4)}-${locdate.slice(4, 6)}-${locdate.slice(6, 8)}`;
+                    newHolidays[dateKey] = items.item.dateName;
+                }
+            }
+    
+            console.log('Fetched Holidays:', newHolidays); // 디버깅용
+            setHolidays(prev => ({...prev, ...newHolidays}));
+        } catch (error) {
+            console.error('공휴일 데이터 조회 실패:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchHolidays(currentYear, currentMonth);
+    }, [currentYear, currentMonth, fetchHolidays]); 
+
+    const isHoliday = (date) => {
+        // 날짜를 YYYY-MM-DD 형식으로 변환
+        const dateKey = format(date, 'yyyy-MM-dd');
+        return holidays[dateKey];
+    };
 
     const fetchEvents = async (start, end) => {
         try {
@@ -940,25 +996,32 @@ const CalendarComponent = () => {
                                 key={index}
                                 className={`min-h-[100px] sm:min-h-[140px] p-1 relative 
                                     ${day.currentMonth 
-                                        ? isWeekend(day.date)
+                                        ? isWeekend(day.date) || isHoliday(day.date)
                                             ? 'bg-gray-100' 
                                             : 'bg-white'
                                         : 'bg-gray-50'
                                     }
                                     ${isToday(day.date) ? 'bg-blue-50' : ''}`}
                             >
-                                <div className={`text-sm sm:font-medium mb-1 flex items-center justify-center sm:justify-start
-                                    ${day.currentMonth 
-                                        ? isWeekend(day.date)
-                                            ? 'text-gray-700'
-                                            : 'text-gray-900'
-                                        : 'text-gray-400'
-                                    }
-                                    ${isToday(day.date) ? 'bg-blue-500 text-white rounded-full w-6 h-6' : ''}`}
-                                >
-                                    {day.date.getDate()}
+                                <div className="flex flex-col space-y-1">
+                                    <div className={`text-sm sm:font-medium flex items-center justify-center sm:justify-start
+                                        ${day.currentMonth 
+                                            ? isWeekend(day.date) || isHoliday(day.date)
+                                                ? 'text-red-600'
+                                                : 'text-gray-900'
+                                            : 'text-gray-400'
+                                        }
+                                        ${isToday(day.date) ? 'bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center' : ''}`}
+                                    >
+                                        {day.date.getDate()}
+                                    </div>
+                                    {isHoliday(day.date) && (
+                                        <div className="text-xs text-red-600 text-center sm:text-left truncate">
+                                            {holidays[format(day.date, 'yyyy-MM-dd')]}
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="space-y-[1px]">
+                                <div className="space-y-[1px] mt-1">
                                     {events
                                         .filter(event => isEventInDate(event, day.date))
                                         .map((event, i) => renderEvent(event, day, i))}
