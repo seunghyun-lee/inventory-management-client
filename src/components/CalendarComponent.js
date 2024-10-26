@@ -3,7 +3,7 @@ import axios from 'axios';
 import { format } from 'date-fns';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
-const HOLIDAY_API_KEY = process.env.HOLIDAY_API_KEY;
+const HOLIDAY_API_KEY = process.env.REACT_APP_HOLIDAY_API_KEY;
 const HOLIDAY_API_BASE_URL = 'https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo';
 
 
@@ -75,8 +75,7 @@ const CalendarComponent = () => {
     const currentYear = useMemo(() => currentDate.getFullYear(), [currentDate]);
     const currentMonth = useMemo(() => currentDate.getMonth() + 1, [currentDate]);  
 
-    const fetchHolidays = useCallback(async (year, month) => {
-        console.log('HOLIDAY_API_KEY:', HOLIDAY_API_KEY);
+    const fetchHolidays = useCallback(async (year, month) => {        
         if (!HOLIDAY_API_KEY) {
             console.error('Holiday API Key is not defined');
             return;
