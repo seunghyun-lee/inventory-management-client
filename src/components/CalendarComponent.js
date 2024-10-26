@@ -3,7 +3,7 @@ import axios from 'axios';
 import { format } from 'date-fns';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
-const HOLIDAY_API_KEY = "%2FSDYjzFoUG%2B8CLE6Dh1JTDqGlvIjM8ge2R%2BFk%2FnEBY1CvYAIQHmbbTXUcQ4HUYy6a5ivZlL1c5RFKR7HL03x2w%3D%3D";
+const HOLIDAY_API_KEY = process.env.HOLIDAY_API_KEY;
 const HOLIDAY_API_BASE_URL = 'http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo';
 
 
