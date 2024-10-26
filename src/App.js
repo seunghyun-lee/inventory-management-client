@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { Container } from 'react-bootstrap';
+// import { Container } from 'react-bootstrap';
 import InventoryList from './components/InventoryList';
 import InboundForm from './components/InboundForm';
 import OutboundForm from './components/OutboundForm';
@@ -17,6 +17,7 @@ import NavbarContent from './components/NavbarContent';
 import PasswordReset from './components/PasswordReset';
 import ResetPassword from './components/ResetPassword';
 import NotFound from './components/NotFound';
+import CalendarComponent from './components/CalendarComponent';
 
 function PrivateRoute({ children }) {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -64,32 +65,35 @@ function App() {
     };
 
     return (
-        <div>
+        <div className="min-h-screen bg-gray-50">
             {isLoggedIn && <NavbarContent />}
-            <Container className="mt-4">
-                <Routes>
-                    <Route 
-                        path="/login" 
-                        element={
-                            isLoggedIn ? <Navigate to="/" replace /> : <LoginPage onLogin={handleLogin} />
-                        } 
-                    />
-                    <Route path="/signup" element={<SignupPage />} />
-                    <Route path="/reset-password" element={<PasswordReset />} />
-                    <Route path="/reset-password/:token" element={<ResetPassword />} />
-                    <Route path="/" element={<PrivateRoute><InventoryList /></PrivateRoute>} />
-                    <Route path="/inbound" element={<PrivateRoute><InboundForm /></PrivateRoute>} />
-                    <Route path="/outbound/:itemId?" element={<PrivateRoute><OutboundForm /></PrivateRoute>} />
-                    <Route path="/inbound-history" element={<PrivateRoute><InboundHistory /></PrivateRoute>} />
-                    <Route path="/outbound-history" element={<PrivateRoute><OutboundHistory /></PrivateRoute>} />
-                    <Route path="/manufacturers" element={<PrivateRoute><ManufacturerManagement /></PrivateRoute>} />
-                    <Route path="/warehouses" element={<PrivateRoute><WarehouseManagement /></PrivateRoute>} />
-                    <Route path="/shelfs" element={<PrivateRoute><ShelfManagement /></PrivateRoute>} />
-                    <Route path="/user-management" element={<PrivateRoute><UserManagement /></PrivateRoute>} />
-                    <Route path="/profile" element={<PrivateRoute><UserProfile onLogout={handleLogout} /></PrivateRoute>} />
-                    <Route path="*" element={<NotFound />} />
-                </Routes>
-            </Container>
+            <div className="w-full px-4 pt-20 pb-8">
+                <div className="max-w-screen-2xl mx-auto">
+                    <Routes>
+                        <Route 
+                            path="/login" 
+                            element={
+                                isLoggedIn ? <Navigate to="/" replace /> : <LoginPage onLogin={handleLogin} />
+                            } 
+                        />
+                        <Route path="/signup" element={<SignupPage />} />
+                        <Route path="/reset-password" element={<PasswordReset />} />
+                        <Route path="/reset-password/:token" element={<ResetPassword />} />
+                        <Route path="/" element={<PrivateRoute><InventoryList /></PrivateRoute>} />
+                        <Route path="/inbound" element={<PrivateRoute><InboundForm /></PrivateRoute>} />
+                        <Route path="/outbound/:itemId?" element={<PrivateRoute><OutboundForm /></PrivateRoute>} />
+                        <Route path="/inbound-history" element={<PrivateRoute><InboundHistory /></PrivateRoute>} />
+                        <Route path="/outbound-history" element={<PrivateRoute><OutboundHistory /></PrivateRoute>} />
+                        <Route path="/calendar" element={<PrivateRoute><CalendarComponent /></PrivateRoute>} />
+                        <Route path="/manufacturers" element={<PrivateRoute><ManufacturerManagement /></PrivateRoute>} />
+                        <Route path="/warehouses" element={<PrivateRoute><WarehouseManagement /></PrivateRoute>} />
+                        <Route path="/shelfs" element={<PrivateRoute><ShelfManagement /></PrivateRoute>} />
+                        <Route path="/user-management" element={<PrivateRoute><UserManagement /></PrivateRoute>} />
+                        <Route path="/profile" element={<PrivateRoute><UserProfile onLogout={handleLogout} /></PrivateRoute>} />
+                        <Route path="*" element={<NotFound />} />
+                    </Routes>
+                </div>
+            </div>
         </div>
     );
 }

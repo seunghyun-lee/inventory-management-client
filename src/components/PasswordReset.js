@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Container, Row, Col, Form, Button, Card, Alert, Navbar } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
@@ -28,49 +27,63 @@ function PasswordReset() {
     };
 
     return (
-        <>
-            <Navbar bg="light" expand="lg">
-                <Container fluid className="d-flex justify-content-between align-items-center">
-                    <Button 
-                    variant="link" 
-                    onClick={handleGoBack} 
-                    className="text-decoration-none text-dark" 
-                    style={{ fontSize: '1.5rem' }}
+        <div className="fixed inset-0 flex flex-col bg-gray-50">
+            
+            <nav className="bg-white shadow-sm">
+                <div className="h-16 flex items-center px-4">
+                    <button
+                        onClick={handleGoBack}
+                        className="text-2xl text-gray-600 hover:text-gray-800 focus:outline-none"
                     >
-                    &lt;
-                    </Button>
-                    <span className="flex-grow-1 text-center" style={{ fontSize: '1.2rem' }}>비밀번호 재설정</span>
-                    <div style={{ width: '24px' }}></div>
-                </Container>
-            </Navbar>
-            <Container className="mt-4">
-                <Row className="justify-content-md-center">
-                    <Col md={6}>
-                        <Card>
-                            <Card.Body>
-                                {message && <Alert variant="success">{message}</Alert>}
-                                {error && <Alert variant="danger">{error}</Alert>}
-                                <Form onSubmit={handleSubmit}>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>이메일</Form.Label>
-                                        <Form.Control
-                                            type="email"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            required
-                                            placeholder="가입시 등록한 이메일을 입력하세요"
-                                        />
-                                    </Form.Group>
-                                    <Button variant="primary" type="submit">
-                                        비밀번호 재설정 링크 받기
-                                    </Button>
-                                </Form>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                </Row>
-            </Container>
-        </>
+                        &lt;
+                    </button>
+                    <h1 className="flex-1 text-center text-lg font-medium">비밀번호 재설정</h1>
+                    <div className="w-6"></div>
+                </div>
+            </nav>
+
+            <div className="flex-1 overflow-auto px-4 py-4">
+                <div className="max-w-md mx-auto">
+                    <div className="bg-white rounded-lg shadow-lg">
+                        <div className="p-4">
+                            {message && (
+                                <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-3 py-2 rounded text-sm">
+                                    {message}
+                                </div>
+                            )}
+                            {error && (
+                                <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded text-sm">
+                                    {error}
+                                </div>
+                            )}
+
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        이메일
+                                    </label>
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                        placeholder="가입시 등록한 이메일을 입력하세요"
+                                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="w-full px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                >
+                                    비밀번호 재설정 링크 받기
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }
 

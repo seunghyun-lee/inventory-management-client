@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { Card, Container, Row, Col, Spinner, Alert, Form, Button } from 'react-bootstrap';
+import { Loader2 } from 'lucide-react';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
@@ -56,104 +56,89 @@ function InboundHistory() {
 
     if (loading) {
         return (
-            <Container className='mt-5 text-center'>
-                <Spinner animation='border' role='status'>
-                    <span className='visually-hidden'>로딩 중...</span>
-                </Spinner>
-            </Container>
+            <div className="flex justify-center items-center mt-20">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            </div>
         );
     }
 
     if (error) {
         return (
-            <Container className='mt-5'>
-                <Alert variant='danger'>{error}</Alert>
-            </Container>
+            <div className="container mx-auto px-4">
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    {error}
+                </div>
+            </div>
         );
     }
 
     return (
-        <div style={{ paddingTop: '30px' }}>
-            <Container className='mt-4'>
-                <Row className="mb-3">
-                    <Col>
-                        <h2>입고 이력</h2>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <Form onSubmit={handleSearch} className="mb-4">
-                            <Row className="g-2 align-items-center">
-                                <Col xs={5} style={{ paddingRight: '5px' }}>
-                                    <Form.Control
-                                        type="date"
-                                        value={startDate}
-                                        onChange={(e) => setStartDate(e.target.value)}
-                                        aria-label="시작 날짜"
-                                        style={{ fontSize: '0.9rem', padding: '0.25rem' }}
-                                    />
-                                </Col>
-                                <Col xs={5} style={{ paddingLeft: '5px', paddingRight: '5px' }}>
-                                    <Form.Control
-                                        type="date"
-                                        value={endDate}
-                                        onChange={(e) => setEndDate(e.target.value)}
-                                        aria-label="마지막 날짜"
-                                        style={{ fontSize: '0.9rem', padding: '0.25rem' }}
-                                    />
-                                </Col>
-                                <Col xs={2} style={{ paddingLeft: '5px' }}>
-                                    <Button 
-                                        variant="primary" 
-                                        type="submit" 
-                                        className="w-100"
-                                        style={{ fontSize: '0.8rem', padding: '0.25rem' }}
-                                    >
-                                        검색
-                                    </Button>
-                                </Col>
-                            </Row>
-                        </Form>
-                    </Col>
-                </Row>
-                <Card className='shadow-sm'>
-                    <Card.Body>
-                        
-                        <div style={{ overflowX: 'auto' }}>
-                            <div style={{ minWidth: '1200px' }}>
-                                <Row className="bg-light font-weight-bold text-center py-2">
-                                    <Col>입고날짜</Col>
-                                    <Col>공급업체</Col>
-                                    <Col>물품명</Col>
-                                    <Col>수량</Col>
-                                    <Col>뒷부호</Col>
-                                    <Col>메이커</Col>
-                                    <Col>창고</Col>
-                                    <Col>위치</Col>
-                                    <Col>메모</Col>
-                                    <Col>담당자</Col>
-                                </Row>
-                                <div style={{ overflowY: 'auto', overflowX: 'hidden', maxHeight: '400px' }}>
-                                    {inboundHistory.map((item, index) => (
-                                        <Row key={index} className="text-center align-items-center py-2 border-bottom">
-                                            <Col>{formatDate(item.date)}</Col>
-                                            <Col>{item.supplier}</Col>
-                                            <Col>{item.item_name}</Col>
-                                            <Col>{item.total_quantity}</Col>
-                                            <Col>{item.item_subname}</Col>
-                                            <Col>{item.manufacturer}</Col>
-                                            <Col>{item.warehouse_name}</Col>
-                                            <Col>{item.warehouse_shelf}</Col>
-                                            <Col>{item.description}</Col>
-                                            <Col>{item.handler_name}</Col>
-                                        </Row>
-                                    ))}
-                                </div>
+        <div className="max-w-full">
+            <div className="px-4">
+                <div className="mb-6">
+                    <h2 className="text-2xl font-bold">입고 이력</h2>
+                </div>
+                
+                <form onSubmit={handleSearch} className="mb-6">
+                    <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                        <input
+                            type="date"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            aria-label="시작 날짜"
+                            className="w-full sm:w-auto px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <input
+                            type="date"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            aria-label="마지막 날짜"
+                            className="w-full sm:w-auto px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <button 
+                            type="submit" 
+                            className="w-full sm:w-auto px-4 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            검색
+                        </button>
+                    </div>
+                </form>
+
+                <div className="bg-white rounded-lg shadow">
+                    <div className="overflow-x-auto">
+                        <div className="min-w-[800px] lg:min-w-full">
+                            <div className="grid grid-cols-10 bg-gray-100 font-semibold text-center py-2 text-sm">
+                                <div className="px-2">입고날짜</div>
+                                <div className="px-2">공급업체</div>
+                                <div className="px-2">물품명</div>
+                                <div className="px-2">수량</div>
+                                <div className="px-2">뒷부호</div>
+                                <div className="px-2">메이커</div>
+                                <div className="px-2">창고</div>
+                                <div className="px-2">위치</div>
+                                <div className="px-2">메모</div>
+                                <div className="px-2">담당자</div>
+                            </div>
+                            <div className="overflow-y-auto max-h-[calc(100vh-300px)]">
+                                {inboundHistory.map((item, index) => (
+                                    <div key={index} className="grid grid-cols-10 text-center items-center py-2 border-b text-sm hover:bg-gray-50">
+                                        <div className="px-2 truncate">{formatDate(item.date)}</div>
+                                        <div className="px-2 truncate">{item.supplier}</div>
+                                        <div className="px-2 truncate">{item.item_name}</div>
+                                        <div className="px-2 truncate">{item.total_quantity}</div>
+                                        <div className="px-2 truncate">{item.item_subname}</div>
+                                        <div className="px-2 truncate">{item.manufacturer}</div>
+                                        <div className="px-2 truncate">{item.warehouse_name}</div>
+                                        <div className="px-2 truncate">{item.warehouse_shelf}</div>
+                                        <div className="px-2 truncate">{item.description}</div>
+                                        <div className="px-2 truncate">{item.handler_name}</div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                    </Card.Body>
-                </Card>
-            </Container>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table, Form, Button, Alert, InputGroup, Container, Row, Col } from 'react-bootstrap';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
@@ -60,62 +59,70 @@ function WarehouseManagement() {
     };
 
     return (
-        <div style={{ paddingTop: '50px' }}>
-            <Container>
-                <Row className="mb-3">
-                    <Col>
-                        <h2>창고 관리</h2>
-                    </Col>
-                </Row>
-                {error && <Alert variant="danger">{error}</Alert>}
-                {success && <Alert variant="success">{success}</Alert>}
-                <Row className="mb-3">
-                    <Col>
-                        <Form onSubmit={handleAddWarehouse}>
-                            <InputGroup>
-                                <Form.Control
-                                    type="text"
-                                    placeholder="새 창고 이름"
-                                    value={newWarehouse}
-                                    onChange={(e) => setNewWarehouse(e.target.value)}
-                                    required
-                                />
-                                <Button variant="primary" type="submit">
-                                    추가
-                                </Button>
-                            </InputGroup>
-                        </Form>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <Table striped bordered hover className="text-center">
+        <div className="max-w-full">
+            <div className="px-4">
+                <div className="mb-6">
+                    <h2 className="text-2xl font-bold">창고 관리</h2>
+                </div>
+
+                {error && (
+                    <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        {error}
+                    </div>
+                )}
+                {success && (
+                    <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                        {success}
+                    </div>
+                )}
+
+                <div className="mb-6">
+                    <form onSubmit={handleAddWarehouse} className="flex gap-2">
+                        <input
+                            type="text"
+                            placeholder="새 창고 이름"
+                            value={newWarehouse}
+                            onChange={(e) => setNewWarehouse(e.target.value)}
+                            required
+                            className="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <button
+                            type="submit"
+                            className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            추가
+                        </button>
+                    </form>
+                </div>
+
+                <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full">
                             <thead>
-                                <tr>
-                                    <th>창고</th>
-                                    <th>작업</th>
+                                <tr className="bg-gray-100">
+                                    <th className="px-6 py-3 text-center font-semibold border-b">창고</th>
+                                    <th className="px-6 py-3 text-center font-semibold border-b">작업</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {warehouses.map((m) => (
-                                    <tr key={m.id}>
-                                        <td>{m.warehouse}</td>
-                                        <td>
-                                            <Button 
-                                                variant="danger" 
-                                                size="sm" 
+                                    <tr key={m.id} className="hover:bg-gray-50">
+                                        <td className="px-6 py-3 text-center border-b">{m.warehouse}</td>
+                                        <td className="px-6 py-3 text-center border-b">
+                                            <button 
                                                 onClick={() => handleDeleteWarehouse(m.id)}
+                                                className="px-3 py-1 text-sm text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
                                             >
                                                 삭제
-                                            </Button>
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
-                        </Table>
-                    </Col>
-                </Row>
-            </Container>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

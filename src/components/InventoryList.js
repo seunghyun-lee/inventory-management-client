@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Row, Col, Card, Button, Alert, Spinner } from 'react-bootstrap';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
@@ -82,69 +81,89 @@ function InventoryList() {
 
     if (loading) {
         return (
-          <div className="text-center mt-5">
-            <Spinner animation="border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-          </div>
+            <div className="flex justify-center items-center mt-5">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            </div>
         );
     }
     
     if (error) {
-        return <Alert variant="danger">{error}</Alert>;
+        return (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                {error}
+            </div>
+        );
     }
 
     return (
-        <div style={{ paddingTop: '60px' }}>
-            <Row className="align-items-center mb-4">
-                <Col>
-                    <h2 className="mb-0">재고 목록</h2>
-                </Col>
-                <Col xs="auto">
-                    <Button variant="info" onClick={handleExcelDownload} className="me-2">
-                        Excel 다운로드
-                    </Button>
-                    <Button variant="success" onClick={handleInbound}>
-                        입고 등록
-                    </Button>
-                </Col>
-            </Row>
-            <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
-                <Row xs={1} md={2} lg={3} className="g-4" style={{ margin: 0 }}>
-                    {inventory.map((item) => (
-                        <Col key={item.id} className="p-2">
-                            <Card className="h-100">
-                                <Card.Body>
-                                    <Card.Title><strong>물품명:</strong> {item.item_name} <span style={{ fontSize: '0.7em' }}>{item.item_subname}</span></Card.Title>
-                                    <Card.Subtitle className="mb-2 text-muted"><strong>메이커:</strong> {item.manufacturer}</Card.Subtitle>
-                                    <Card.Text className="d-flex justify-content-between align-items-center mb-3">
-                                        <span className="text-start">
-                                            <strong>수량:</strong> {item.current_quantity || 0}
-                                        </span>
-                                        <span className="text-center">
-                                            <strong>창고:</strong> {item.warehouse_name || '모름'}
-                                        </span>
-                                        <span className="text-center">
-                                            <strong>위치:</strong> {item.warehouse_shelf || '모름'}
-                                        </span>
-                                    </Card.Text>
-                                    <Card.Text>
-                                        <strong>비고:</strong> {item.description || '없음'}
-                                    </Card.Text>
-                                    <div className="d-flex justify-content-between mt-3">
-                                        <Button variant="danger" size="sm" onClick={() => handleDelete(item.id)}>
-                                            삭제
-                                        </Button>
-                                        <Button variant="primary" size="sm" onClick={() => handleOutbound(item.id)}>
-                                            출고
-                                        </Button>
-                                    </div>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    ))}
-                </Row>
-            </div>            
+        <div className="fixed inset-0 pt-16">
+            <div className="fixed top-16 left-0 right-0 bg-white z-10">
+                <div className="container mx-auto px-4 py-4">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                        <h2 className="text-2xl font-bold">재고 목록</h2>
+                        <div className="flex items-center space-x-2">
+                            <button 
+                                onClick={handleExcelDownload}
+                                className="flex-1 md:flex-none bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm whitespace-nowrap"
+                            >
+                                Excel 다운로드
+                            </button>
+                            <button 
+                                onClick={handleInbound}
+                                className="flex-1 md:flex-none bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm whitespace-nowrap"
+                            >
+                                입고 등록
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="absolute inset-x-0 top-[185px] md:top-[140px] bottom-0 overflow-auto"> {/* 헤더 높이에 맞춰 top 값 조정 */}
+                <div className="container mx-auto p-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {inventory.map((item) => (
+                            <div key={item.id} 
+                                className="bg-gray-100 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 p-4 
+                                        border-l-4 border-blue-400 hover:border-blue-500 
+                                        hover:-translate-y-0.5">
+                                <div className="mb-3">
+                                    <h3 className="text-lg font-semibold">
+                                        물품명: {item.item_name} 
+                                        <span className="text-sm ml-1 text-gray-600">{item.item_subname}</span>
+                                    </h3>
+                                    <p className="text-gray-600 font-medium">메이커: {item.manufacturer}</p>
+                                </div>
+                                
+                                <div className="flex justify-between items-center mb-3">
+                                    <span>수량: {item.current_quantity || 0}</span>
+                                    <span>창고: {item.warehouse_name || '모름'}</span>
+                                    <span>위치: {item.warehouse_shelf || '모름'}</span>
+                                </div>
+                                
+                                <p className="mb-4">
+                                    <span className="font-medium">비고:</span> {item.description || '없음'}
+                                </p>
+                                
+                                <div className="flex justify-between mt-4">
+                                    <button 
+                                        onClick={() => handleDelete(item.id)}
+                                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm"
+                                    >
+                                        삭제
+                                    </button>
+                                    <button 
+                                        onClick={() => handleOutbound(item.id)}
+                                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm"
+                                    >
+                                        출고
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>            
+            </div>
         </div>
     );
 }

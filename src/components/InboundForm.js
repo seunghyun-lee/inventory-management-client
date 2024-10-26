@@ -1,14 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Form, Row, Col, Button, Card, Alert, Dropdown } from 'react-bootstrap';
+import { Loader2 } from 'lucide-react';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
-
-const readonlyStyle = {
-    backgroundColor: '#f8f9fa',  // 옅은 회색 배경
-    color: '#6c757d'  // 약간 어두운 텍스트 색상
-};
 
 function InboundForm() {
     const navigate = useNavigate();
@@ -29,6 +24,8 @@ function InboundForm() {
     const [manufacturers, setManufacturers] = useState([]);
     const [warehouses, setWarehouses] = useState([]);
     const [shelfs, setShelfs] = useState([]);
+    const [openDropdown, setOpenDropdown] = useState(null);
+    const dropdownRef = useRef(null);
 
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
@@ -41,6 +38,23 @@ function InboundForm() {
         fetchManufacturers();
         fetchWarehouses();
         fetchShelfs();
+    }, []);
+
+    const handleCancel = () => {
+        navigate('/');
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setOpenDropdown(null);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
     }, []);
 
     const fetchManufacturers = async () => {
@@ -132,24 +146,21 @@ function InboundForm() {
         setError(null);
         const requiredFields = ['date', 'supplier', 'item_name', 'total_quantity', 'manufacturer', 'warehouse_name', 'handler_name'];
         const missingFields = requiredFields.filter(field => !formData[field]);
-
+    
         if (missingFields.length > 0) {
             setError(`다음 필드를 입력해주세요: ${missingFields.join(', ')}`);
             setLoading(false);
             return;
         }
-
+    
         const dataToSend = {
             ...formData,
             item_subname: formData.item_subname || '',
             warehouse_shelf: formData.warehouse_shelf || '',
         };
-
-        console.log('Sending data to server:', dataToSend); // 디버깅을 위한 로그
-
+    
         try {
-            const response = await axios.post(`${API_BASE_URL}/api/transactions/inbound`, dataToSend);
-            console.log('Server response:', response.data); // 디버깅을 위한 로그
+            await axios.post(`${API_BASE_URL}/api/transactions/inbound`, dataToSend);
             navigate('/');
         } catch (error) {
             console.error('입고 처리 중 오류 발생:', error.response ? error.response.data : error.message);
@@ -160,168 +171,271 @@ function InboundForm() {
     };
 
     return (
-        <div style={{ paddingTop: '60px' }}>
-            <Card>
-                <Card.Header as="h2">입고 등록</Card.Header>
-                <Card.Body>
-                    {error && <Alert variant="danger">{error}</Alert>}
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>날짜</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Form.Control
-                                    type="date"
-                                    name="date"
-                                    value={formData.date}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </Col>
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>공급업체</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Form.Control
-                                    type="text"
-                                    name="supplier"
-                                    value={formData.supplier}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </Col>                        
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>물품명</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Form.Control
-                                    type="text"
-                                    name="item_name"
-                                    value={formData.item_name}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </Col>                        
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>수량</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Form.Control
-                                    type="number"
-                                    name="total_quantity"
-                                    value={formData.total_quantity}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </Col>                        
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>뒷부호</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Form.Control
-                                    type="text"
-                                    name="item_subname"
-                                    value={formData.item_subname}
-                                    onChange={handleChange}
-                                />
-                            </Col>                        
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>메이커</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Dropdown>
-                                    <Dropdown.Toggle variant="outline-secondary" id="dropdown-manufacturer">
-                                        {formData.manufacturer || "선택해주세요"}
-                                    </Dropdown.Toggle>
+        <div className="max-w-full">
+            <div className="px-4">
+                <div className="max-w-4xl mx-auto bg-white rounded-lg shadow">
+                    <div className="px-6 py-4 border-b">
+                        <h2 className="text-2xl font-bold">입고 등록</h2>
+                    </div>
+                    <div className="p-6">
+                        {error && (
+                            <div className="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                                {error}
+                            </div>
+                        )}
 
-                                    <Dropdown.Menu>
-                                        {manufacturers.map((m) => (
-                                            <Dropdown.Item 
-                                                key={m.id} 
-                                                onClick={() => handleManufacturerSelect(m.manufacturer)}
-                                            >
-                                                {m.manufacturer}
-                                            </Dropdown.Item>
-                                        ))}
-                                    </Dropdown.Menu>
-                                </Dropdown>
-                            </Col>                        
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>창고</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Dropdown>
-                                    <Dropdown.Toggle variant="outline-secondary" id="dropdown-warehouse">
-                                        {formData.warehouse_name || "선택해주세요"}
-                                    </Dropdown.Toggle>
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">
+                                    날짜
+                                </label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <input
+                                        type="date"
+                                        name="date"
+                                        value={formData.date}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
 
-                                    <Dropdown.Menu>
-                                        {Array.isArray(warehouses) && warehouses.map((m) => (
-                                            <Dropdown.Item 
-                                                key={m.id} 
-                                                onClick={() => handleWarehouseSelect(m.warehouse)}
-                                            >
-                                                {m.warehouse}
-                                            </Dropdown.Item>
-                                        ))}
-                                    </Dropdown.Menu>
-                                </Dropdown>
-                            </Col>
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>위치</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Dropdown>
-                                    <Dropdown.Toggle variant="outline-secondary" id="dropdown-shelf">
-                                        {formData.warehouse_shelf || "선택해주세요"}
-                                    </Dropdown.Toggle>
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">
+                                    공급업체
+                                </label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <input
+                                        type="text"
+                                        name="supplier"
+                                        value={formData.supplier}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
 
-                                    <Dropdown.Menu>
-                                        {Array.isArray(shelfs) && shelfs.map((m) => (
-                                            <Dropdown.Item 
-                                                key={m.id} 
-                                                onClick={() => handleShelfSelect(m.shelf)}
-                                            >
-                                                {m.shelf}
-                                            </Dropdown.Item>
-                                        ))}
-                                    </Dropdown.Menu>
-                                </Dropdown>
-                            </Col>
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>메모</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                name="description"
-                                value={formData.description}
-                                onChange={handleChange}
-                            />
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>담당자</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Form.Control
-                                    type="text"
-                                    name="handler_name"
-                                    value={formData.handler_name}
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">
+                                    물품명
+                                </label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <input
+                                        type="text"
+                                        name="item_name"
+                                        value={formData.item_name}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">
+                                    수량
+                                </label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <input
+                                        type="number"
+                                        name="total_quantity"
+                                        value={formData.total_quantity}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">
+                                    뒷부호
+                                </label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <input
+                                        type="text"
+                                        name="item_subname"
+                                        value={formData.item_subname}
+                                        onChange={handleChange}
+                                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">
+                                    메이커
+                                </label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <div className="relative" ref={dropdownRef}>
+                                        <button
+                                            type="button"
+                                            className="w-full px-3 py-2 text-left border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 inline-flex justify-between items-center"
+                                            onClick={() => setOpenDropdown(openDropdown === 'manufacturer' ? null : 'manufacturer')}
+                                        >
+                                            {formData.manufacturer || "선택해주세요"}
+                                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </button>
+                                        {openDropdown === 'manufacturer' && (
+                                            <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg">
+                                                {manufacturers.map((m) => (
+                                                    <button
+                                                        key={m.id}
+                                                        type="button"
+                                                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                                                        onClick={() => {
+                                                            handleManufacturerSelect(m.manufacturer);
+                                                            setOpenDropdown(null);
+                                                        }}
+                                                    >
+                                                        {m.manufacturer}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">
+                                    창고
+                                </label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <div className="relative" ref={dropdownRef}>
+                                        <button
+                                            type="button"
+                                            className="w-full px-3 py-2 text-left border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 inline-flex justify-between items-center"
+                                            onClick={() => setOpenDropdown(openDropdown === 'warehouse' ? null : 'warehouse')}
+                                        >
+                                            {formData.warehouse_name || "선택해주세요"}
+                                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </button>
+                                        {openDropdown === 'warehouse' && (
+                                            <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg">
+                                                {warehouses.map((w) => (
+                                                    <button
+                                                        key={w.id}
+                                                        type="button"
+                                                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                                                        onClick={() => {
+                                                            handleWarehouseSelect(w.warehouse);
+                                                            setOpenDropdown(null);
+                                                        }}
+                                                    >
+                                                        {w.warehouse}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">
+                                    위치
+                                </label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <div className="relative" ref={dropdownRef}>
+                                        <button
+                                            type="button"
+                                            className="w-full px-3 py-2 text-left border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 inline-flex justify-between items-center"
+                                            onClick={() => setOpenDropdown(openDropdown === 'shelf' ? null : 'shelf')}
+                                        >
+                                            {formData.warehouse_shelf || "선택해주세요"}
+                                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </button>
+                                        {openDropdown === 'shelf' && (
+                                            <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg">
+                                                {shelfs.map((s) => (
+                                                    <button
+                                                        key={s.id}
+                                                        type="button"
+                                                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                                                        onClick={() => {
+                                                            handleShelfSelect(s.shelf);
+                                                            setOpenDropdown(null);
+                                                        }}
+                                                    >
+                                                        {s.shelf}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700">
+                                    메모
+                                </label>
+                                <textarea
+                                    name="description"
+                                    value={formData.description}
                                     onChange={handleChange}
-                                    required
-                                    readOnly
-                                    style={readonlyStyle}
+                                    rows="3"
+                                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
-                            </Col>
-                        </Form.Group>
-                        <Row className="justify-content-center mt-4">
-                            <Col xs={12} sm={6} md={4} lg={3} className="d-flex justify-content-center">
-                                <Button variant="primary" type="submit"  disabled={loading}>
-                                {loading ? '처리 중...' : '입고 등록'}
-                                </Button>
-                            </Col>
-                        </Row>
-                    </Form>
-                </Card.Body>
-            </Card>
-        </div>        
+                            </div>
+
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">
+                                    담당자
+                                </label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <input
+                                        type="text"
+                                        name="handler_name"
+                                        value={formData.handler_name}
+                                        onChange={handleChange}
+                                        required
+                                        readOnly
+                                        className="w-full px-3 py-2 border rounded-md bg-gray-50 text-gray-600 focus:outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex justify-center gap-4 mt-8">
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className={`
+                                        px-6 py-2 text-white rounded-md
+                                        ${loading 
+                                            ? 'bg-blue-400 cursor-not-allowed' 
+                                            : 'bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500'}
+                                    `}
+                                >
+                                    {loading ? (
+                                        <div className="flex items-center">
+                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                            처리 중...
+                                        </div>
+                                    ) : '입고 등록'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleCancel}
+                                    className="px-6 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                >
+                                    취소
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }
 

@@ -1,14 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
-import { Form, Row, Col, Button, Card, Alert, Spinner } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { Loader2 } from 'lucide-react';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
-
-const readonlyStyle = {
-    backgroundColor: '#f8f9fa',  // 옅은 회색 배경
-    color: '#6c757d'  // 약간 어두운 텍스트 색상
-};
 
 function OutboundForm() {
     const { itemId } = useParams();
@@ -52,14 +47,14 @@ function OutboundForm() {
         }));
         fetchItemDetails();
     }, [fetchItemDetails]);
-    
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevData => ({
             ...prevData,
             [name]: value
         }));
-    }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -84,163 +79,230 @@ function OutboundForm() {
         }
     };
 
+    const handleCancel = () => {
+        navigate('/');
+    };
+
     if (loading) {
-        return <Spinner animation='border' />;
+        return (
+            <div className="flex justify-center items-center mt-20">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            </div>
+        );
     }
 
     if (error) {
-        return <Alert variant='dnager'>{error}</Alert>
+        return (
+            <div className="px-4">
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    {error}
+                </div>
+            </div>
+        );
     }
 
     if (!item) {
-        return <Alert variant='warning'>품목을 찾을 수 없습니다.</Alert>
+        return (
+            <div className="px-4">
+                <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+                    품목을 찾을 수 없습니다.
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div style={{ paddingTop: '60px' }}>
-            <Card>
-                <Card.Header as='h2'>출고 등록</Card.Header>
-                <Card.Body>
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>날짜</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Form.Control 
-                                    type="date" 
-                                    name="date" 
-                                    value={formData.date} 
-                                    onChange={handleChange} 
-                                    required 
-                                />
-                            </Col>
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>거래처</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Form.Control 
-                                    type='text' 
-                                    name='client'
-                                    value={formData.client}
+        <div className="max-w-full">
+            <div className="px-4">
+                <div className="max-w-4xl mx-auto bg-white rounded-lg shadow">
+                    <div className="px-6 py-4 border-b">
+                        <h2 className="text-2xl font-bold">출고 등록</h2>
+                    </div>
+                    <div className="p-6">
+                        {error && (
+                            <div className="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                                {error}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">날짜</label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <input
+                                        type="date"
+                                        name="date"
+                                        value={formData.date}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">거래처</label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <input
+                                        type="text"
+                                        name="client"
+                                        value={formData.client}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">물품명</label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <input
+                                        type="text"
+                                        value={item.item_name}
+                                        readOnly
+                                        className="w-full px-3 py-2 border rounded-md bg-gray-50 text-gray-600"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">재고수량</label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <input
+                                        type="text"
+                                        value={item.current_quantity}
+                                        readOnly
+                                        className="w-full px-3 py-2 border rounded-md bg-gray-50 text-gray-600"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">출고수량</label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <input
+                                        type="number"
+                                        name="total_quantity"
+                                        value={formData.total_quantity}
+                                        onChange={handleChange}
+                                        min="1"
+                                        max={item.current_quantity}
+                                        required
+                                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">뒷부호</label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <input
+                                        type="text"
+                                        value={item.item_subname}
+                                        readOnly
+                                        className="w-full px-3 py-2 border rounded-md bg-gray-50 text-gray-600"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* 메이커 */}
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">메이커</label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <input
+                                        type="text"
+                                        value={item.manufacturer}
+                                        readOnly
+                                        className="w-full px-3 py-2 border rounded-md bg-gray-50 text-gray-600"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">창고</label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <input
+                                        type="text"
+                                        name="warehouse_name"
+                                        value={formData.warehouse_name}
+                                        readOnly
+                                        className="w-full px-3 py-2 border rounded-md bg-gray-50 text-gray-600"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">위치</label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <input
+                                        type="text"
+                                        name="warehouse_shelf"
+                                        value={formData.warehouse_shelf}
+                                        readOnly
+                                        className="w-full px-3 py-2 border rounded-md bg-gray-50 text-gray-600"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700">메모</label>
+                                <textarea
+                                    name="description"
+                                    value={formData.description}
                                     onChange={handleChange}
-                                    required
+                                    rows="3"
+                                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
-                            </Col>
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>물품명</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Form.Control 
-                                    type='text' 
-                                    value={item.item_name} 
-                                    readOnly
-                                    style={readonlyStyle}
-                                />
-                            </Col>
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>재고수량</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Form.Control 
-                                    type='text' 
-                                    value={item.current_quantity} 
-                                    readOnly 
-                                    style={readonlyStyle}
-                                />
-                            </Col>
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>출고수량</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Form.Control 
-                                    type="number" 
-                                    name="total_quantity"
-                                    value={formData.total_quantity} 
-                                    onChange={handleChange}
-                                    min="1"
-                                    max={item.current_quantity}
-                                    required 
-                                />
-                            </Col>
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>뒷부호</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Form.Control 
-                                    type='text' 
-                                    value={item.item_subname} 
-                                    readOnly 
-                                    style={readonlyStyle}
-                                />
-                            </Col>
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>메이커</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Form.Control 
-                                    type='text' 
-                                    value={item.manufacturer} 
-                                    readOnly 
-                                    style={readonlyStyle}
-                                />
-                            </Col>
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>창고</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Form.Control
-                                    type="text"
-                                    name="warehouse_name"
-                                    value={formData.warehouse_name}
-                                    readOnly 
-                                    style={readonlyStyle}
-                                />
-                            </Col>
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>위치</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Form.Control
-                                    type="text"
-                                    name="warehouse_shelf"
-                                    value={formData.warehouse_shelf}
-                                    readOnly 
-                                    style={readonlyStyle}
-                                />
-                            </Col>
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>메모</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                name="description"
-                                value={formData.description}
-                                onChange={handleChange}
-                            />
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center">
-                            <Form.Label column xs={3} sm={3} md={2} className="mb-2 mb-sm-0" style={{ textAlign: 'left' }}>담당자</Form.Label>
-                            <Col xs={9} sm={9} md={10}>
-                                <Form.Control
-                                    type="text"
-                                    name="handler_name"
-                                    value={formData.handler_name}
-                                    onChange={handleChange}
-                                    required
-                                    readOnly
-                                    style={readonlyStyle}
-                                />
-                            </Col>
-                        </Form.Group>
-                        <Row className="justify-content-center mt-4">
-                            <Col xs={12} sm={6} md={4} lg={3} className="d-flex justify-content-center">
-                                <Button variant='primary' type='submit' disabled={submitting}>
-                                {submitting ? '저리 중...' : '출고 등록'}
-                                </Button>
-                            </Col>
-                        </Row>
-                    </Form>
-                </Card.Body>
-            </Card>
+                            </div>
+
+                            {/* 담당자 */}
+                            <div className="grid grid-cols-12 gap-4 items-center">
+                                <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">담당자</label>
+                                <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                    <input
+                                        type="text"
+                                        name="handler_name"
+                                        value={formData.handler_name}
+                                        onChange={handleChange}
+                                        required
+                                        readOnly
+                                        className="w-full px-3 py-2 border rounded-md bg-gray-50 text-gray-600"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex justify-center gap-4 mt-8">
+                                <button
+                                    type="submit"
+                                    disabled={submitting}
+                                    className={`
+                                        px-6 py-2 text-white rounded-md
+                                        ${submitting 
+                                            ? 'bg-blue-400 cursor-not-allowed' 
+                                            : 'bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500'}
+                                    `}
+                                >
+                                    {submitting ? (
+                                        <div className="flex items-center">
+                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                            처리 중...
+                                        </div>
+                                    ) : '출고 등록'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleCancel}
+                                    className="px-6 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                >
+                                    취소
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

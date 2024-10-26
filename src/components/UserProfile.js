@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
-
-const readonlyStyle = {
-    backgroundColor: '#f8f9fa',  // 옅은 회색 배경
-    color: '#6c757d'  // 약간 어두운 텍스트 색상
-};
 
 function UserProfile({ onLogout }) {
     const [user, setUser] = useState(null);
@@ -69,81 +63,137 @@ function UserProfile({ onLogout }) {
     if (!user) return null;
 
     return (
-        <div style={{ paddingTop: '50px' }}>            
-            <Card>
-                <Card.Header as="h2">사용자 정보</Card.Header>
-                <Card.Body>
-                    {error && <Alert variant="danger">{error}</Alert>}
-                    {success && <Alert variant="success">{success}</Alert>}
-                    <Form>
-                        <Form.Group className="mb-3">
-                            <Form.Label>사용자 ID</Form.Label>
-                            <Form.Control 
-                                type="text" 
-                                value={user.username} 
-                                readOnly 
-                                style={readonlyStyle}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>이름</Form.Label>
-                            <Form.Control 
-                                type="text" 
-                                value={user.handler_name} 
-                                onChange={(e) => setUser({...user, handler_name: e.target.value})}
-                                readOnly={!editMode}
-                                style={readonlyStyle}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>이메일</Form.Label>
-                            <Form.Control 
-                                type="email" 
-                                value={user.email} 
-                                onChange={(e) => setUser({...user, email: e.target.value})}
-                                readOnly={!editMode}
-                                style={editMode ? {} : readonlyStyle}
-                            />
-                        </Form.Group>
-                        {editMode && (
-                            <>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>현재 비밀번호</Form.Label>
-                                    <Form.Control 
-                                        type="password" 
-                                        value={currentPassword}
-                                        onChange={(e) => setCurrentPassword(e.target.value)}
-                                        required
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>새 비밀번호</Form.Label>
-                                    <Form.Control 
-                                        type="password" 
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                        placeholder="변경하지 않으려면 비워두세요"
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>새 비밀번호 확인</Form.Label>
-                                    <Form.Control 
-                                        type="password" 
-                                        value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                    />
-                                </Form.Group>
-                            </>
+        <div className="max-w-full">
+            <div className="px-4">
+                <div className="max-w-2xl mx-auto bg-white rounded-lg shadow">
+                    <div className="px-6 py-4 border-b">
+                        <h2 className="text-2xl font-bold">사용자 정보</h2>
+                    </div>
+                    
+                    <div className="p-6">
+                        {error && (
+                            <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                                {error}
+                            </div>
                         )}
-                        {editMode ? (
-                            <Button variant="primary" onClick={handleSave}>패스워드 저장</Button>
-                        ) : (
-                            <Button variant="secondary" onClick={handleEdit}>패스워드 수정</Button>
+                        {success && (
+                            <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                                {success}
+                            </div>
                         )}
-                    </Form>
-                    <Button variant="danger" className="mt-3" onClick={handleLogout}>로그아웃</Button>
-                </Card.Body>
-            </Card>
+
+                        <form className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    사용자 ID
+                                </label>
+                                <input
+                                    type="text"
+                                    value={user.username}
+                                    readOnly
+                                    className="w-full px-3 py-2 bg-gray-50 text-gray-600 border rounded focus:outline-none"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    이름
+                                </label>
+                                <input
+                                    type="text"
+                                    value={user.handler_name}
+                                    onChange={(e) => setUser({...user, handler_name: e.target.value})}
+                                    readOnly
+                                    className="w-full px-3 py-2 bg-gray-50 text-gray-600 border rounded focus:outline-none"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    이메일
+                                </label>
+                                <input
+                                    type="email"
+                                    value={user.email}
+                                    onChange={(e) => setUser({...user, email: e.target.value})}
+                                    readOnly={!editMode}
+                                    className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${!editMode ? 'bg-gray-50 text-gray-600' : 'bg-white'}`}
+                                />
+                            </div>
+
+                            {editMode && (
+                                <>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            현재 비밀번호
+                                        </label>
+                                        <input
+                                            type="password"
+                                            value={currentPassword}
+                                            onChange={(e) => setCurrentPassword(e.target.value)}
+                                            required
+                                            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            새 비밀번호
+                                        </label>
+                                        <input
+                                            type="password"
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                            placeholder="변경하지 않으려면 비워두세요"
+                                            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            새 비밀번호 확인
+                                        </label>
+                                        <input
+                                            type="password"
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                </>
+                            )}
+
+                            <div className="flex gap-2">
+                                {editMode ? (
+                                    <button
+                                        type="button"
+                                        onClick={handleSave}
+                                        className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        패스워드 저장
+                                    </button>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={handleEdit}
+                                        className="px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                    >
+                                        패스워드 수정
+                                    </button>
+                                )}
+                                
+                                <button
+                                    type="button"
+                                    onClick={handleLogout}
+                                    className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                >
+                                    로그아웃
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
