@@ -171,8 +171,8 @@ function InboundForm() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
-            <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-md">
+        <div className="min-h-screen bg-gray-50 sm:p-6 md:p-6">
+            <div className="w-full h-full max-w-4xl mx-auto bg-white rounded-none sm:rounded-lg shadow-md">
                 <div className="px-4 sm:px-6 py-4 border-b">
                     <h2 className="text-2xl font-bold">입고 등록</h2>
                 </div>

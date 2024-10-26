@@ -85,25 +85,25 @@ function OutboundForm() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 p-4 sm:p-6 flex justify-center items-center">
+            <div className="min-h-screen bg-gray-50 sm:p-6 md:p-6 flex justify-center items-center">
                 <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
             </div>
         );
     }
-
+    
     if (error) {
         return (
-            <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+            <div className="min-h-screen bg-gray-50 sm:p-6 md:p-6">
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
                     {error}
                 </div>
             </div>
         );
     }
-
+    
     if (!item) {
         return (
-            <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+            <div className="min-h-screen bg-gray-50 sm:p-6 md:p-6">
                 <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
                     품목을 찾을 수 없습니다.
                 </div>
@@ -112,8 +112,8 @@ function OutboundForm() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
-            <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-md">
+        <div className="min-h-screen bg-gray-50 sm:p-6 md:p-6">
+            <div className="w-full h-full max-w-4xl mx-auto bg-white rounded-none sm:rounded-lg shadow-md">
                 <div className="px-4 sm:px-6 py-4 border-b">
                     <h2 className="text-2xl font-bold">출고 등록</h2>
                 </div>
