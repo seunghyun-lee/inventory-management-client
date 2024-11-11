@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Loader2 } from 'lucide-react';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
-const roleOptions = ['관리자', '직원', '퇴사', '대기'];
+const roleOptions = ['관리자', '직원', '조회자', '퇴사', '대기'];
 
 function UserManagement() {
     const [users, setUsers] = useState([]);
@@ -40,9 +40,11 @@ function UserManagement() {
         try {
             await axios.put(`${API_BASE_URL}/api/users/${user.id}/role`, { role: user.role });
             setUsers(users.map(u => u.id === user.id ? { ...u, isModified: false } : u));
+            setError(null); // 성공 시 에러 메시지 초기화
         } catch (error) {
             console.error('Error updating user:', error);
-            setError('사용자 정보 업데이트에 실패했습니다.');
+            const errorMessage = error.response?.data?.error || '사용자 정보 업데이트에 실패했습니다.';
+            setError(errorMessage);
         }
     };
 

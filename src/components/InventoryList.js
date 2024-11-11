@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { hasEditPermission } from './roles';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
 function InventoryList() {
+    const [user] = useState(JSON.parse(localStorage.getItem('user')));
+    const canEdit = hasEditPermission(user?.role);
     const [inventory, setInventory] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -247,12 +250,14 @@ function InventoryList() {
                     >
                         Excel 다운로드
                     </button>
-                    <button 
-                        onClick={handleInbound}
-                        className="px-3 py-1 text-sm text-white bg-green-500 rounded hover:bg-green-600 focus:outline-none focus:ring-1 focus:ring-green-500"
-                    >
-                        입고 등록
-                    </button>
+                    {canEdit && (
+                        <button 
+                            onClick={handleInbound}
+                            className="px-3 py-1 text-sm text-white bg-green-500 rounded hover:bg-green-600 focus:outline-none focus:ring-1 focus:ring-green-500"
+                        >
+                            입고 등록
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -304,91 +309,72 @@ function InventoryList() {
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-100">
                         <tr className="text-xs">
-                            <th className="w-[18%] px-3 py-2 text-left font-semibold border-b">물품명</th>
-                            <th className="w-[12%] px-3 py-2 text-left font-semibold border-b">뒷부호</th>
-                            <th className="w-[12%] px-3 py-2 text-left font-semibold border-b">추가번호</th>
-                            <th className="w-[12%] px-3 py-2 text-left font-semibold border-b">메이커</th>
-                            <th className="w-[12%] px-3 py-2 text-left font-semibold border-b">창고</th>
-                            <th className="w-[12%] px-3 py-2 text-left font-semibold border-b">위치</th>
-                            <th className="w-[10%] px-3 py-2 text-right font-semibold border-b">수량</th>
-                            <th className="w-[12%] px-3 py-2 text-center font-semibold border-b">작업</th>
+                            <th className="px-3 py-2 text-left font-semibold border-b">물품명</th>
+                            <th className="px-3 py-2 text-left font-semibold border-b">뒷부호</th>
+                            <th className="px-3 py-2 text-left font-semibold border-b">추가번호</th>
+                            <th className="px-3 py-2 text-left font-semibold border-b">메이커</th>
+                            <th className="px-3 py-2 text-left font-semibold border-b">창고</th>
+                            <th className="px-3 py-2 text-left font-semibold border-b">위치</th>
+                            <th className="px-3 py-2 text-right font-semibold border-b">수량</th>
+                            {canEdit && (
+                                <th className="px-3 py-2 text-center font-semibold border-b">작업</th>
+                            )}
                         </tr>
                     </thead>
-                </table>
-                <div className="flex-1 overflow-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <tbody className="text-xs bg-white">
-                            {filteredInventory.map((row, index) => {
-                                if (row.type === 'item') {
-                                    return (
-                                        <tr key={index} className="hover:bg-gray-50">
-                                            <td className="w-[18%] px-3 py-2 whitespace-nowrap border-b">{row.item_name}</td>
-                                            <td className="w-[12%] px-3 py-2 whitespace-nowrap border-b">{row.item_subname}</td>
-                                            <td className="w-[12%] px-3 py-2 whitespace-nowrap border-b">{row.item_subno}</td>
-                                            <td className="w-[12%] px-3 py-2 whitespace-nowrap border-b">{row.manufacturer}</td>
-                                            <td className="w-[12%] px-3 py-2 whitespace-nowrap border-b">{row.warehouse_name}</td>
-                                            <td className="w-[12%] px-3 py-2 whitespace-nowrap border-b">{row.warehouse_shelf}</td>
-                                            <td className="w-[10%] px-3 py-2 text-right whitespace-nowrap border-b">
-                                                {row.current_quantity?.toLocaleString() || '0'}  {/* 수량 표시 수정 */}
-                                            </td>
-                                            <td className="w-[12%] px-3 py-2 whitespace-nowrap border-b">
+                    <tbody className="text-xs bg-white">
+                        {filteredInventory.map((row, index) => {
+                            if (row.type === 'item') {
+                                return (
+                                    <tr key={index} className="hover:bg-gray-50">
+                                        <td className="px-3 py-2 whitespace-nowrap border-b">{row.item_name}</td>
+                                        <td className="px-3 py-2 whitespace-nowrap border-b">{row.item_subname}</td>
+                                        <td className="px-3 py-2 whitespace-nowrap border-b">{row.item_subno}</td>
+                                        <td className="px-3 py-2 whitespace-nowrap border-b">{row.manufacturer}</td>
+                                        <td className="px-3 py-2 whitespace-nowrap border-b">{row.warehouse_name}</td>
+                                        <td className="px-3 py-2 whitespace-nowrap border-b">{row.warehouse_shelf}</td>
+                                        <td className="px-3 py-2 text-right whitespace-nowrap border-b">
+                                            {row.current_quantity?.toLocaleString() || '0'}  {/* 수량 표시 수정 */}
+                                        </td>
+                                        {canEdit && (
+                                            <td className="px-3 py-2 whitespace-nowrap border-b">
                                                 <div className="flex justify-center space-x-1">
+                                                    
                                                     <button
                                                         onClick={() => handleOutbound(row.id)}
                                                         className="px-2 py-0.5 text-xs text-white bg-blue-500 rounded hover:bg-blue-600"
                                                     >
                                                         출고
                                                     </button>
-                                                    {/* <button
-                                                        onClick={() => handleEdit(row)}
-                                                        className="px-2 py-0.5 text-xs text-white bg-yellow-500 rounded hover:bg-yellow-600"
-                                                    >
-                                                        수정
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDelete(row.inbound_id)}
-                                                        disabled={row.has_outbound_history}
-                                                        className={`px-2 py-0.5 text-xs text-white rounded ${
-                                                            row.has_outbound_history 
-                                                            ? 'bg-gray-400 cursor-not-allowed opacity-50' 
-                                                            : 'bg-red-500 hover:bg-red-600'
-                                                        }`}
-                                                        title={row.has_outbound_history ? '출고 이력이 있는 물품은 삭제할 수 없습니다' : ''}
-                                                    >
-                                                        삭제
-                                                    </button> */}
                                                 </div>
                                             </td>
-                                        </tr>
-                                    );
-                                } else if (row.type === 'subtotal') {
-                                    return (
-                                        <tr key={index} className="bg-gray-50 text-xs font-semibold">
-                                            <td colSpan="6" className="px-3 py-2 text-right border-b">
-                                                {row.item_name}{row.item_subname ? ` (${row.item_subname})` : ''} 소계:
-                                            </td>
-                                            <td className="px-3 py-2 text-right whitespace-nowrap border-b">
-                                                {row.quantity.toLocaleString()}
-                                            </td>
-                                            <td className="px-3 py-2 border-b"></td>
-                                        </tr>
-                                    );
-                                } else if (row.type === 'total') {
-                                    return (
-                                        <tr key={index} className="bg-gray-200 text-xs font-bold">
-                                            <td colSpan="6" className="px-3 py-2 text-right border-b">총계:</td>
-                                            <td className="px-3 py-2 text-right whitespace-nowrap border-b">
-                                                {row.quantity.toLocaleString()}
-                                            </td>
-                                            <td className="px-3 py-2 border-b"></td>
-                                        </tr>
-                                    );
-                                }
-                                return null;
-                            })}
-                        </tbody>
-                    </table>
-                </div>
+                                        )}
+                                    </tr>
+                                );
+                            } else if (row.type === 'subtotal') {
+                                return (
+                                    <tr key={index} className="bg-gray-50 text-xs font-semibold">
+                                        <td colSpan={6} className="px-3 py-2 text-right border-b">{row.item_name} 소계:</td>
+                                        <td className="px-3 py-2 text-right whitespace-nowrap border-b">
+                                            {row.quantity.toLocaleString()}
+                                        </td>
+                                        {canEdit && <td className="px-3 py-2 border-b"></td>}
+                                    </tr>
+                                );
+                            } else if (row.type === 'total') {
+                                return (
+                                    <tr key={index} className="bg-gray-200 text-xs font-bold">
+                                        <td colSpan={6} className="px-3 py-2 text-right border-b">총계:</td>
+                                        <td className="px-3 py-2 text-right whitespace-nowrap border-b">
+                                            {row.quantity.toLocaleString()}
+                                        </td>
+                                        {canEdit && <td className="px-3 py-2 border-b"></td>}
+                                    </tr>
+                                );
+                            }
+                            return null;
+                        })}
+                    </tbody>
+                </table>                
             </div>
         </div>
     );

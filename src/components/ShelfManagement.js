@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { hasEditPermission } from './roles';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
 function ShelfManagement() {
+    const [user] = useState(JSON.parse(localStorage.getItem('user')));
+    const canEdit = hasEditPermission(user?.role);
     const [shelfs, setShelfs] = useState([]);
     const [newShelf, setNewShelf] = useState('');
     const [error, setError] = useState(null);
@@ -75,48 +78,59 @@ function ShelfManagement() {
                 </div>
             )}
 
-            <div className="mb-4">
-                <form onSubmit={handleAddShelf} className="flex gap-2">
-                    <input
-                        type="text"
-                        placeholder="새 위치 이름"
-                        value={newShelf}
-                        onChange={(e) => setNewShelf(e.target.value)}
-                        required
-                        className="flex-1 px-2 py-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                    <button
-                        type="submit"
-                        className="px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    >
-                        추가
-                    </button>
-                </form>
-            </div>
+            {canEdit && (
+                <div className="mb-4">
+                    <form onSubmit={handleAddShelf} className="flex gap-2">
+                        <input
+                            type="text"
+                            placeholder="새 위치 이름"
+                            value={newShelf}
+                            onChange={(e) => setNewShelf(e.target.value)}
+                            required
+                            className="flex-1 px-2 py-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        />
+                        <button
+                            type="submit"
+                            className="px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        >
+                            추가
+                        </button>
+                    </form>
+                </div>
+            )}
 
             <div className="flex-1 bg-white rounded-lg shadow overflow-hidden flex flex-col">
+                {/* 고정 헤더 테이블 */}
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-100">
                         <tr className="text-xs">
-                            <th className="w-[calc(100%-100px)] px-3 py-2 text-center font-semibold border-b">위치</th>
-                            <th className="w-[100px] px-3 py-2 text-center font-semibold border-b">작업</th>
+                            <th className="w-[90%] px-3 py-2 text-center font-semibold border-b">위치</th>
+                            {canEdit && (
+                                <th className="w-[10%] px-3 py-2 text-center font-semibold border-b">작업</th>
+                            )}
                         </tr>
                     </thead>
                 </table>
+
+                {/* 스크롤 가능한 바디 테이블 */}
                 <div className="flex-1 overflow-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                         <tbody className="text-xs bg-white">
                             {shelfs.map((m) => (
                                 <tr key={m.id} className="hover:bg-gray-50">
-                                    <td className="w-[calc(100%-100px)] px-3 py-2 text-center border-b">{m.shelf}</td>
-                                    <td className="w-[100px] px-3 py-2 text-center border-b">
-                                        <button 
-                                            onClick={() => handleDeleteShelf(m.id)}
-                                            className="px-2 py-0.5 text-xs text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring-1 focus:ring-red-500"
-                                        >
-                                            삭제
-                                        </button>
+                                    <td className="w-[90%] px-3 py-2 text-center border-b">
+                                        {m.shelf}
                                     </td>
+                                    {canEdit && (
+                                        <td className="w-[10%] px-3 py-2 text-center border-b">
+                                            <button 
+                                                onClick={() => handleDeleteShelf(m.id)}
+                                                className="px-2 py-0.5 text-xs text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                            >
+                                                삭제
+                                            </button>
+                                        </td>
+                                    )}
                                 </tr>
                             ))}
                         </tbody>

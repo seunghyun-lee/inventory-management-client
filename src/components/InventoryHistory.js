@@ -2,11 +2,14 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Loader2 } from 'lucide-react';
+import { hasEditPermission } from './roles';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
 function InventoryHistory() {
     // 기존 상태 유지
+    const [user] = useState(JSON.parse(localStorage.getItem('user')));
+    const canEdit = hasEditPermission(user?.role);
     const [history, setHistory] = useState([]);
     const [filteredHistory, setFilteredHistory] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -969,12 +972,14 @@ function InventoryHistory() {
                         >
                             Excel 다운로드
                         </button>
-                        <button 
-                            onClick={handleInbound}
-                            className="px-3 py-1 text-sm text-white bg-green-500 rounded hover:bg-green-600 focus:outline-none focus:ring-1 focus:ring-green-500"
-                        >
-                            입고 등록
-                        </button>
+                        {canEdit && (
+                            <button 
+                                onClick={handleInbound}
+                                className="px-3 py-1 text-sm text-white bg-green-500 rounded hover:bg-green-600 focus:outline-none focus:ring-1 focus:ring-green-500"
+                            >
+                                입고 등록
+                            </button>
+                        )}
                     </div>
                 </div>
                 
@@ -1159,7 +1164,9 @@ function InventoryHistory() {
                                     <th className="px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">위치</th>
                                     <th className="px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">메모</th>
                                     <th className="px-4 py-2 text-sm font-semibold text-center whitespace-nowrap">담당자</th>
-                                    <th className="px-4 py-2 text-sm font-semibold text-center whitespace-nowrap">작업</th>
+                                    {canEdit && (
+                                        <th className="px-4 py-2 text-sm font-semibold text-center whitespace-nowrap">작업</th>
+                                    )}
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
@@ -1184,39 +1191,44 @@ function InventoryHistory() {
                                         <td className="px-4 py-2 text-sm text-left">{item.warehouse_shelf}</td>
                                         <td className="px-4 py-2 text-sm text-left">{item.description}</td>
                                         <td className="px-4 py-2 text-sm text-center whitespace-nowrap">{item.handler_name}</td>
-                                        <td className="px-4 py-2 text-sm text-center whitespace-nowrap">
-                                            {item.type === 'outbound' ? (
+                                        {canEdit && (
+                                            <td className="px-4 py-2 text-sm text-center whitespace-nowrap">
+                                            
                                                 <div className="flex justify-center gap-2">
-                                                    <button
-                                                        onClick={() => handleEditOutbound(item)}
-                                                        className="px-2 py-1 text-xs text-white bg-yellow-500 rounded hover:bg-yellow-600"
-                                                    >
-                                                        수정
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDeleteOutboundClick(item.id)}
-                                                        className="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600"
-                                                    >
-                                                        삭제
-                                                    </button>
+                                                    {item.type === 'outbound' ? (
+                                                        <>
+                                                            <button
+                                                                onClick={() => handleEditOutbound(item)}
+                                                                className="px-2 py-1 text-xs text-white bg-yellow-500 rounded hover:bg-yellow-600"
+                                                            >
+                                                                수정
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteOutboundClick(item.id)}
+                                                                className="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600"
+                                                            >
+                                                                삭제
+                                                            </button>
+                                                        </>
+                                                    ) : canModifyInbound(item) && (
+                                                        <>
+                                                            <button
+                                                                onClick={() => handleEditInbound(item)}
+                                                                className="px-2 py-1 text-xs text-white bg-yellow-500 rounded hover:bg-yellow-600"
+                                                            >
+                                                                수정
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleInboundCancel(item)}
+                                                                className="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600"
+                                                            >
+                                                                취소
+                                                            </button>
+                                                        </>
+                                                    )}
                                                 </div>
-                                            ) : canModifyInbound(item) && (
-                                                <div className="flex justify-center gap-2">
-                                                    <button
-                                                        onClick={() => handleEditInbound(item)}
-                                                        className="px-2 py-1 text-xs text-white bg-yellow-500 rounded hover:bg-yellow-600"
-                                                    >
-                                                        수정
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleInboundCancel(item)}
-                                                        className="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600"
-                                                    >
-                                                        취소
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </td>
+                                            </td>
+                                        )}                                        
                                     </tr>
                                 ))}
                             </tbody>
