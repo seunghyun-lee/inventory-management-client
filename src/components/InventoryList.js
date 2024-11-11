@@ -195,24 +195,23 @@ function InventoryList() {
 
     const handleExcelDownload = async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/api/export-excel`, {
-                responseType: 'blob', // 중요: 응답을 blob으로 받습니다.
+            const response = await axios.get(`${API_BASE_URL}/api/export-inventory-summary`, {
+                responseType: 'blob',
             });
             const blob = response.data;
-
+    
             if (window.Android) {
                 const reader = new FileReader();
                 reader.onloadend = function() {
-                    const base64data = reader.result.split(',')[1];  // base64 데이터 추출
-                    window.Android.saveBase64AsFile(base64data, 'inventory_report.xlsx');  // Android로 전달
+                    const base64data = reader.result.split(',')[1];
+                    window.Android.saveBase64AsFile(base64data, 'inventory_summary.xlsx');
                 };
-                reader.readAsDataURL(blob);  // Blob을 Base64로 변환
+                reader.readAsDataURL(blob);
             } else {
-                // 브라우저에서 실행되는 경우
                 const url = window.URL.createObjectURL(new Blob([blob]));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'inventory_report.xlsx');
+                link.setAttribute('download', 'inventory_summary.xlsx');
                 document.body.appendChild(link);
                 link.click();
                 link.remove();
