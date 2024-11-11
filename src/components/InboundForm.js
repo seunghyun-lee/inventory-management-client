@@ -1,16 +1,18 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Loader2 } from 'lucide-react';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
-function InboundForm() {
+function InboundForm({ editMode = false }) {
+    const { id } = useParams();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         manufacturer: '',
         item_name: '',
         item_subname: '',
+        item_subno: '',
         date: '',
         supplier: '',        
         total_quantity: '',
@@ -20,12 +22,33 @@ function InboundForm() {
         description: ''
     });
     const [loading, setLoading] = useState(false);
+    const [loadingData, setLoadingData] = useState(editMode);
     const [error, setError] = useState(null);
     const [manufacturers, setManufacturers] = useState([]);
     const [warehouses, setWarehouses] = useState([]);
     const [shelfs, setShelfs] = useState([]);
     const [openDropdown, setOpenDropdown] = useState(null);
-    const dropdownRef = useRef(null);
+    const [selectedIndex, setSelectedIndex] = useState({
+        manufacturer: -1,
+        warehouse_name: -1,
+        warehouse_shelf: -1
+    });
+    const [filteredLists, setFilteredLists] = useState({
+        manufacturers: [],
+        warehouses: [],
+        shelfs: []
+    });
+    const manufacturerDropdownRef = useRef(null);
+    const warehouseDropdownRef = useRef(null);
+    const shelfDropdownRef = useRef(null);
+    const [initialData, setInitialData] = useState(null);
+    const [isFormChanged, setIsFormChanged] = useState(false);
+
+    useEffect(() => {
+        if (editMode && id) {
+            fetchInboundData(id);
+        }
+    }, [editMode, id]);
 
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
@@ -38,7 +61,7 @@ function InboundForm() {
         fetchManufacturers();
         fetchWarehouses();
         fetchShelfs();
-    }, []);
+    }, [editMode]);
 
     const handleCancel = () => {
         navigate('/');
@@ -46,7 +69,9 @@ function InboundForm() {
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            if (manufacturerDropdownRef.current && !manufacturerDropdownRef.current.contains(event.target) &&
+                warehouseDropdownRef.current && !warehouseDropdownRef.current.contains(event.target) &&
+                shelfDropdownRef.current && !shelfDropdownRef.current.contains(event.target)) {
                 setOpenDropdown(null);
             }
         };
@@ -57,6 +82,15 @@ function InboundForm() {
         };
     }, []);
 
+    useEffect(() => {
+        if (editMode && initialData) {
+            const hasChanges = Object.keys(formData).some(key => {
+                return formData[key] !== initialData[key];
+            })
+            setIsFormChanged(hasChanges);
+        }
+    }, [formData, initialData, editMode]);
+
     const fetchManufacturers = async () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/api/manufacturers`);
@@ -65,12 +99,12 @@ function InboundForm() {
                 setManufacturers(manufacturersData);
             } else {
                 console.error('Unexpected manufacturers data structure:', manufacturersData);
-                setError('제조사 데이터 구조가 예상과 다릅니다.');
+                setError('메이커 데이터 구조가 예상과 다릅니다.');
                 setManufacturers([]);
             }
         } catch (error) {
             console.error('Error fetching manufacturers:', error);
-            setError('제조사 목록을 불러오는데 실패했습니다.');
+            setError('메이커 목록을 불러오는데 실패했습니다.');
             setManufacturers([]);
         }
     };
@@ -111,6 +145,26 @@ function InboundForm() {
         }
     };
 
+    const fetchInboundData = async (inboundId) => {
+        try {
+            setLoadingData(true);
+            const response = await axios.get(`${API_BASE_URL}/api/inventory/inbound/${inboundId}`);
+            const data = response.data;
+
+            if (data.date) {
+                const date = new Date(data.date);
+                data.date = date.toISOString().split('T')[0];
+            }
+            setFormData(data);
+            setInitialData(data);
+        } catch (error) {
+            console.error('Error fetching inbound data:', error);
+            setError('데이터 로드에 실패했습니다.');
+        } finally {
+            setLoadingData(false);
+        }
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevData => ({
@@ -119,31 +173,98 @@ function InboundForm() {
         }));
     };
 
-    const handleManufacturerSelect = (manufacturer) => {
-        setFormData(prevData => ({
-            ...prevData,
-            manufacturer: manufacturer
-        }));
+    const handleKeyDown = (e, type) => {
+        const list = filteredLists[`${type}s`];
+        const currentIndex = selectedIndex[type];
+    
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                const nextIndex = currentIndex === -1 ? 0 : 
+                                currentIndex < list.length - 1 ? currentIndex + 1 : currentIndex;
+                setSelectedIndex(prev => ({
+                    ...prev,
+                    [type]: nextIndex
+                }));
+                setOpenDropdown(type);
+                const selectedElement = document.querySelector(`[data-index="${nextIndex}"]`);
+                selectedElement?.scrollIntoView({ block: 'nearest' });
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                const prevIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+                setSelectedIndex(prev => ({
+                    ...prev,
+                    [type]: prevIndex
+                }));
+                const prevElement = document.querySelector(`[data-index="${prevIndex}"]`);
+                prevElement?.scrollIntoView({ block: 'nearest' });
+                break;
+            case 'Enter':
+            case 'Tab':
+                if (currentIndex >= 0 && currentIndex < list.length) {
+                    const value = type === 'manufacturer' ? list[currentIndex].manufacturer :
+                                type === 'warehouse_name' ? list[currentIndex].warehouse :
+                                type === 'warehouse_shelf' ? list[currentIndex].shelf :
+                                '';
+                    handleSelect(type, value);
+                    setOpenDropdown(null);
+                    if (e.key === 'Tab') {
+                        return;
+                    }
+                    e.preventDefault();
+                }
+                break;
+            case 'Escape':
+                e.preventDefault();
+                setOpenDropdown(null);
+                setSelectedIndex(prev => ({ ...prev, [type]: -1 }));
+                break;
+            default:
+                break;
+        }
     };
 
-    const handleWarehouseSelect = (warehouse) => {
-        setFormData(prevData => ({
-            ...prevData,
-            warehouse_name: warehouse
+    const handleInputChange = (e, type) => {
+        const { value } = e.target;
+        setFormData(prev => ({ ...prev, [type]: value }));
+    
+        let filteredItems = [];
+        if (type === 'manufacturer') {
+            filteredItems = manufacturers.filter(m => 
+                m.manufacturer.toLowerCase().includes(value.toLowerCase())
+            );
+        } else if (type === 'warehouse_name') {
+            filteredItems = warehouses.filter(w => 
+                w.warehouse.toLowerCase().includes(value.toLowerCase())
+            );
+        } else if (type === 'warehouse_shelf') {
+            filteredItems = shelfs.filter(s => 
+                s.shelf.toLowerCase().includes(value.toLowerCase())
+            );
+        }
+    
+        setFilteredLists(prev => ({
+            ...prev,
+            [`${type}s`]: filteredItems
         }));
+        setOpenDropdown(value.trim() ? type : null);
     };
 
-    const handleShelfSelect = (shelf) => {
-        setFormData(prevData => ({
-            ...prevData,
-            warehouse_shelf: shelf
+    const handleSelect = (type, value) => {
+        setFormData(prev => ({
+            ...prev,
+            [type]: value
         }));
+        setOpenDropdown(null);
+        setSelectedIndex(prev => ({ ...prev, [type]: -1 }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+
         const requiredFields = ['date', 'supplier', 'item_name', 'total_quantity', 'manufacturer', 'warehouse_name', 'handler_name'];
         const missingFields = requiredFields.filter(field => !formData[field]);
     
@@ -160,21 +281,123 @@ function InboundForm() {
         };
     
         try {
-            await axios.post(`${API_BASE_URL}/api/transactions/inbound`, dataToSend);
+            if (editMode) {
+                await axios.put(`${API_BASE_URL}/api/inventory/inbound/${id}`, dataToSend);
+            } else {
+                await axios.post(`${API_BASE_URL}/api/transactions/inbound`, dataToSend);
+            }
             navigate('/');
         } catch (error) {
             console.error('입고 처리 중 오류 발생:', error.response ? error.response.data : error.message);
-            setError('입고 처리 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            setError(editMode ? '수정 중 오류가 발생했습니다.' : '입고 처리 중 오류가 발생했습니다.');
         } finally {
             setLoading(false);
         }
     };
 
+    const renderCombobox = (type, label, placeholder, list) => (
+        <div className="grid grid-cols-12 gap-4 items-center">
+            <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">
+                {label}
+            </label>
+            <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                <div className="relative" ref={type === 'manufacturer' ? manufacturerDropdownRef : 
+                                           type === 'warehouse_name' ? warehouseDropdownRef : shelfDropdownRef}>
+                    <input
+                        type="text"
+                        placeholder={placeholder}
+                        value={formData[type]}
+                        onChange={(e) => handleInputChange(e, type)}
+                        onKeyDown={(e) => handleKeyDown(e, type)}
+                        onFocus={() => {                            
+                            setOpenDropdown(type);
+                            setFilteredLists(prev => ({
+                                ...prev,
+                                [`${type}s`]: list
+                            }));                            
+                        }}
+                        onBlur={(e) => {
+                            const relatedTarget = e.relatedTarget;
+                            const isDropdownClick = relatedTarget && 
+                                (relatedTarget.classList.contains('dropdown-item') ||
+                                 relatedTarget.closest('.dropdown-content'));
+    
+                            if (!isDropdownClick) {                                
+                                if (!e.relatedTarget || !e.relatedTarget.classList.contains('combobox-input')) {
+                                    setTimeout(() => {
+                                        const currentIndex = selectedIndex[type];
+                                        const list = filteredLists[`${type}s`];
+                                        if (currentIndex >= 0 && currentIndex < list.length) {
+                                            const value = type === 'manufacturer' ? list[currentIndex].manufacturer :
+                                                        type === 'warehouse_name' ? list[currentIndex].warehouse :
+                                                        type === 'warehouse_shelf' ? list[currentIndex].shelf :
+                                                        '';
+                                            handleSelect(type, value);
+                                        }
+                                    }, 200);
+                                }
+                            }
+                        }}
+                        className="combobox-input w-full px-3 py-2 text-left border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        autoComplete="off"
+                    />
+                    {openDropdown === type && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
+                            {filteredLists[`${type}s`].map((item, index) => {
+                                const value = type === 'manufacturer' ? item.manufacturer :
+                                            type === 'warehouse_name' ? item.warehouse :
+                                            type === 'warehouse_shelf' ? item.shelf :
+                                            '';
+                                return (
+                                    <button
+                                        key={item.id}
+                                        type="button"
+                                        data-index={index}
+                                        className={`block w-full px-4 py-2 text-left text-sm ${
+                                            index === selectedIndex[type] 
+                                                ? 'bg-blue-500 text-white' 
+                                                : 'hover:bg-gray-100'
+                                        }`}
+                                        onClick={() => {
+                                            handleSelect(type, value);
+                                            setOpenDropdown(null);
+                                        }}
+                                        onMouseEnter={() => setSelectedIndex(prev => ({ ...prev, [type]: index }))}
+                                    >
+                                        {value}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+
+    if (loadingData) {
+        return (
+            <div className="min-h-screen bg-gray-50 sm:p-6 md:p-6">
+                <div className="w-full h-full max-w-4xl mx-auto bg-white rounded-none sm:rounded-lg shadow-md">
+                    <div className="px-4 sm:px-6 py-4 border-b">
+                        <h2 className="text-2xl font-bold">{editMode ? '입고 수정' : '입고 등록'}</h2>
+                    </div>
+                    <div className="p-4 sm:p-6">
+                        <div className="flex flex-col items-center justify-center space-y-4 min-h-[400px]">
+                            <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+                            <p className="text-gray-600">데이터를 불러오는 중입니다...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 sm:p-6 md:p-6">
             <div className="w-full h-full max-w-4xl mx-auto bg-white rounded-none sm:rounded-lg shadow-md">
                 <div className="px-4 sm:px-6 py-4 border-b">
-                    <h2 className="text-2xl font-bold">입고 등록</h2>
+                    <h2 className="text-2xl font-bold">{editMode ? '입고 수정' : '입고 등록'}</h2>
                 </div>
                 <div className="p-4 sm:p-6">
                     {error && (
@@ -265,114 +488,22 @@ function InboundForm() {
 
                         <div className="grid grid-cols-12 gap-4 items-center">
                             <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">
-                                메이커
+                                추가번호
                             </label>
                             <div className="col-span-9 sm:col-span-9 md:col-span-10">
-                                <div className="relative" ref={dropdownRef}>
-                                    <button
-                                        type="button"
-                                        className="w-full px-3 py-2 text-left border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 inline-flex justify-between items-center"
-                                        onClick={() => setOpenDropdown(openDropdown === 'manufacturer' ? null : 'manufacturer')}
-                                    >
-                                        {formData.manufacturer || "선택해주세요"}
-                                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </button>
-                                    {openDropdown === 'manufacturer' && (
-                                        <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg">
-                                            {manufacturers.map((m) => (
-                                                <button
-                                                    key={m.id}
-                                                    type="button"
-                                                    className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                                                    onClick={() => {
-                                                        handleManufacturerSelect(m.manufacturer);
-                                                        setOpenDropdown(null);
-                                                    }}
-                                                >
-                                                    {m.manufacturer}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
+                                <input
+                                    type="text"
+                                    name="item_subno"
+                                    value={formData.item_subno}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-12 gap-4 items-center">
-                            <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">
-                                창고
-                            </label>
-                            <div className="col-span-9 sm:col-span-9 md:col-span-10">
-                                <div className="relative" ref={dropdownRef}>
-                                    <button
-                                        type="button"
-                                        className="w-full px-3 py-2 text-left border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 inline-flex justify-between items-center"
-                                        onClick={() => setOpenDropdown(openDropdown === 'warehouse' ? null : 'warehouse')}
-                                    >
-                                        {formData.warehouse_name || "선택해주세요"}
-                                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </button>
-                                    {openDropdown === 'warehouse' && (
-                                        <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg">
-                                            {warehouses.map((w) => (
-                                                <button
-                                                    key={w.id}
-                                                    type="button"
-                                                    className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                                                    onClick={() => {
-                                                        handleWarehouseSelect(w.warehouse);
-                                                        setOpenDropdown(null);
-                                                    }}
-                                                >
-                                                    {w.warehouse}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-12 gap-4 items-center">
-                            <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">
-                                위치
-                            </label>
-                            <div className="col-span-9 sm:col-span-9 md:col-span-10">
-                                <div className="relative" ref={dropdownRef}>
-                                    <button
-                                        type="button"
-                                        className="w-full px-3 py-2 text-left border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 inline-flex justify-between items-center"
-                                        onClick={() => setOpenDropdown(openDropdown === 'shelf' ? null : 'shelf')}
-                                    >
-                                        {formData.warehouse_shelf || "선택해주세요"}
-                                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </button>
-                                    {openDropdown === 'shelf' && (
-                                        <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg">
-                                            {shelfs.map((s) => (
-                                                <button
-                                                    key={s.id}
-                                                    type="button"
-                                                    className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                                                    onClick={() => {
-                                                        handleShelfSelect(s.shelf);
-                                                        setOpenDropdown(null);
-                                                    }}
-                                                >
-                                                    {s.shelf}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
+                        {renderCombobox('manufacturer', '메이커', '메이커 선택 또는 입력', manufacturers)}
+                        {renderCombobox('warehouse_name', '창고', '창고 선택 또는 입력', warehouses)}
+                        {renderCombobox('warehouse_shelf', '위치', '위치 선택 또는 입력', shelfs)}
 
                         <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700">
@@ -405,30 +536,30 @@ function InboundForm() {
                         </div>
 
                         <div className="flex justify-center gap-4 mt-8">
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className={`
-                                    px-6 py-2 text-white rounded-md
-                                    ${loading 
-                                        ? 'bg-blue-400 cursor-not-allowed' 
-                                        : 'bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500'}
-                                `}
-                            >
-                                {loading ? (
-                                    <div className="flex items-center">
-                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                        처리 중...
-                                    </div>
-                                ) : '입고 등록'}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleCancel}
-                                className="px-6 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                            >
-                                취소
-                            </button>
+                        <button
+                            type="submit"
+                            disabled={loading || (editMode && !isFormChanged)}
+                            className={`
+                                px-6 py-2 text-white rounded-md
+                                ${loading || (editMode && !isFormChanged)
+                                    ? 'bg-gray-400 cursor-not-allowed' 
+                                    : 'bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500'}
+                            `}
+                        >
+                            {loading ? (
+                                <div className="flex items-center">
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    처리 중...
+                                </div>
+                            ) : editMode ? '수정하기' : '입고 등록'}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleCancel}
+                            className="px-6 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                        >
+                            취소
+                        </button>
                         </div>
                     </form>
                 </div>

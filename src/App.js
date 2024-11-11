@@ -4,12 +4,15 @@ import { BrowserRouter as Router, Route, Routes, Navigate, useLocation, useNavig
 import InventoryList from './components/InventoryList';
 import InboundForm from './components/InboundForm';
 import OutboundForm from './components/OutboundForm';
-import InboundHistory from './components/InboundHistory';
-import OutboundHistory from './components/OutboundHistory';
+import InventoryHistory from './components/InventoryHistory';
+// import InboundHistory from './components/InboundHistory';
+// import OutboundHistory from './components/OutboundHistory';
 import UserManagement from './components/UserManagement';
 import ManufacturerManagement from './components/ManufacturerManagement';
 import WarehouseManagement from './components/WarehouseManagement';
 import ShelfManagement from './components/ShelfManagement';
+import ItemManagement from './components/ItemManagement';
+import ItemUpload from './components/ItemUpload';
 import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import UserProfile from './components/UserProfile';
@@ -36,7 +39,7 @@ function App() {
         // 뒤로 가기 이벤트 리스너
         const handlePopState = (event) => {
             const privateRoutes = [
-                '/', '/inbound', '/outbound', '/inbound-history', '/outbound-history',
+                '/', '/inbound', '/outbound', '/inventory-history', '/items', '/itemupload',
                 '/manufacturers', '/warehouses', '/shelfs', '/user-management', '/profile'
             ];
 
@@ -81,10 +84,14 @@ function App() {
                         <Route path="/reset-password/:token" element={<ResetPassword />} />
                         <Route path="/" element={<PrivateRoute><InventoryList /></PrivateRoute>} />
                         <Route path="/inbound" element={<PrivateRoute><InboundForm /></PrivateRoute>} />
+                        <Route path="/inbound/edit/:id" element={<PrivateRoute><InboundForm editMode={true} /></PrivateRoute>} />
                         <Route path="/outbound/:itemId?" element={<PrivateRoute><OutboundForm /></PrivateRoute>} />
-                        <Route path="/inbound-history" element={<PrivateRoute><InboundHistory /></PrivateRoute>} />
-                        <Route path="/outbound-history" element={<PrivateRoute><OutboundHistory /></PrivateRoute>} />
+                        <Route path="/inventory-history" element={<PrivateRoute><InventoryHistory /></PrivateRoute>} />
+                        {/* <Route path="/inbound-history" element={<PrivateRoute><InboundHistory /></PrivateRoute>} /> */}
+                        {/* <Route path="/outbound-history" element={<PrivateRoute><OutboundHistory /></PrivateRoute>} /> */}
                         <Route path="/calendar" element={<PrivateRoute><CalendarComponent /></PrivateRoute>} />
+                        <Route path="/items" element={<PrivateRoute><ItemManagement /></PrivateRoute>} />
+                        <Route path="/itemupload" element={<PrivateRoute><ItemUpload /></PrivateRoute>} />
                         <Route path="/manufacturers" element={<PrivateRoute><ManufacturerManagement /></PrivateRoute>} />
                         <Route path="/warehouses" element={<PrivateRoute><WarehouseManagement /></PrivateRoute>} />
                         <Route path="/shelfs" element={<PrivateRoute><ShelfManagement /></PrivateRoute>} />

@@ -18,9 +18,12 @@ function NavbarContent() {
 
     const menuItems = [
         { path: '/', label: '재고 목록' },
+        { path: '/inventory-history', label: '이력'},
         { path: '/calendar', label: '달력' },
-        { path: '/inbound-history', label: '입고 이력' },
-        { path: '/outbound-history', label: '출고 이력' },
+        // { path: '/inbound-history', label: '입고 이력' },
+        // { path: '/outbound-history', label: '출고 이력' },
+        { path: '/items', label: '물품' },
+        // { path: '/itemupload', label: '물품업로드' },
         { path: '/manufacturers', label: '메이커' },
         { path: '/warehouses', label: '창고' },
         { path: '/shelfs', label: '위치' },

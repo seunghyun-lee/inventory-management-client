@@ -65,80 +65,86 @@ function UserManagement() {
     }
 
     return (
-        <div className="max-w-full">
-            <div className="px-4">
-                <div className="mb-6">
-                    <h2 className="text-2xl font-bold">사용자 권한 관리</h2>
-                </div>
+        <div className="flex flex-col h-[calc(100vh-8rem)]">
+            <div className="mb-4">
+                <h2 className="text-lg font-semibold">사용자 권한 관리</h2>
+            </div>
 
-                <div className="bg-white rounded-lg shadow overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full">
-                            <thead>
-                                <tr className="bg-gray-100">
-                                    <th className="px-6 py-3 text-center font-semibold border-b">아이디</th>
-                                    <th className="px-6 py-3 text-center font-semibold border-b">이름</th>
-                                    <th className="px-6 py-3 text-center font-semibold border-b">역할</th>
-                                    <th className="px-6 py-3 text-center font-semibold border-b">작업</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {users.map((user) => (
-                                    <tr key={user.id} className="hover:bg-gray-50">
-                                        <td className="px-6 py-3 text-center border-b">{user.username}</td>
-                                        <td className="px-6 py-3 text-center border-b">{user.handler_name}</td>
-                                        <td className="px-6 py-3 text-center border-b">
-                                            <div className="relative inline-block text-left">
-                                                <button
-                                                    type="button"
-                                                    className="inline-flex justify-center items-center px-4 py-2 border rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                                    onClick={() => setOpenDropdown(openDropdown === user.id ? null : user.id)}
-                                                >
-                                                    {user.role}
-                                                    <svg className="ml-2 -mr-1 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                                                    </svg>
-                                                </button>
-                                                {openDropdown === user.id && (
-                                                    <div className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                                                        <div className="py-1">
-                                                            {roleOptions.map(role => (
-                                                                <button
-                                                                    key={role}
-                                                                    className={`
-                                                                        ${user.role === role ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} 
-                                                                        w-full text-left px-4 py-2 text-sm hover:bg-gray-100
-                                                                    `}
-                                                                    onClick={() => handleRoleChange(user.id, role)}
-                                                                >
-                                                                    {role}
-                                                                </button>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-3 text-center border-b">
-                                            <button 
-                                                onClick={() => handleUpdate(user)}
-                                                disabled={!user.isModified}
-                                                className={`
-                                                    px-3 py-1 rounded text-sm
-                                                    ${user.isModified 
-                                                        ? 'bg-blue-500 hover:bg-blue-600 text-white focus:ring-2 focus:ring-blue-500' 
-                                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'}
-                                                    focus:outline-none
-                                                `}
+            {error && (
+                <div className="mb-2 bg-red-100 border border-red-400 text-red-700 px-2 py-1 rounded text-xs">
+                    {error}
+                </div>
+            )}
+
+            <div className="flex-1 bg-white rounded-lg shadow overflow-hidden flex flex-col">
+                <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-100">
+                        <tr className="text-xs">
+                            <th className="w-[30%] px-3 py-2 text-center font-semibold border-b">아이디</th>
+                            <th className="w-[25%] px-3 py-2 text-center font-semibold border-b">이름</th>
+                            <th className="w-[25%] px-3 py-2 text-center font-semibold border-b">역할</th>
+                            <th className="w-[20%] px-3 py-2 text-center font-semibold border-b">작업</th>
+                        </tr>
+                    </thead>
+                </table>
+                <div className="flex-1 overflow-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <tbody className="text-xs bg-white">
+                            {users.map((user) => (
+                                <tr key={user.id} className="hover:bg-gray-50">
+                                    <td className="w-[30%] px-3 py-2 text-center border-b">{user.username}</td>
+                                    <td className="w-[25%] px-3 py-2 text-center border-b">{user.handler_name}</td>
+                                    <td className="w-[25%] px-3 py-2 text-center border-b">
+                                        <div className="relative inline-block text-left">
+                                            <button
+                                                type="button"
+                                                className="inline-flex justify-center items-center px-2 py-1 text-xs border rounded bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                onClick={() => setOpenDropdown(openDropdown === user.id ? null : user.id)}
                                             >
-                                                수정
+                                                {user.role}
+                                                <svg className="ml-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                </svg>
                                             </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                            {openDropdown === user.id && (
+                                                <div className="absolute right-0 mt-1 w-32 rounded shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                                                    <div className="py-1">
+                                                        {roleOptions.map(role => (
+                                                            <button
+                                                                key={role}
+                                                                className={`
+                                                                    ${user.role === role ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} 
+                                                                    w-full text-left px-2 py-1 text-xs hover:bg-gray-100
+                                                                `}
+                                                                onClick={() => handleRoleChange(user.id, role)}
+                                                            >
+                                                                {role}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="w-[20%] px-3 py-2 text-center border-b">
+                                        <button 
+                                            onClick={() => handleUpdate(user)}
+                                            disabled={!user.isModified}
+                                            className={`
+                                                px-2 py-0.5 rounded text-xs
+                                                ${user.isModified 
+                                                    ? 'bg-blue-500 hover:bg-blue-600 text-white focus:ring-1 focus:ring-blue-500' 
+                                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'}
+                                                focus:outline-none
+                                            `}
+                                        >
+                                            수정
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

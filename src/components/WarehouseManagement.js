@@ -59,68 +59,68 @@ function WarehouseManagement() {
     };
 
     return (
-        <div className="max-w-full">
-            <div className="px-4">
-                <div className="mb-6">
-                    <h2 className="text-2xl font-bold">창고 관리</h2>
+        <div className="flex flex-col h-[calc(100vh-8rem)]">
+            <div className="mb-4">
+                <h2 className="text-lg font-semibold">창고 관리</h2>
+            </div>
+
+            {error && (
+                <div className="mb-2 bg-red-100 border border-red-400 text-red-700 px-2 py-1 rounded text-xs">
+                    {error}
                 </div>
-
-                {error && (
-                    <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                        {error}
-                    </div>
-                )}
-                {success && (
-                    <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                        {success}
-                    </div>
-                )}
-
-                <div className="mb-6">
-                    <form onSubmit={handleAddWarehouse} className="flex gap-2">
-                        <input
-                            type="text"
-                            placeholder="새 창고 이름"
-                            value={newWarehouse}
-                            onChange={(e) => setNewWarehouse(e.target.value)}
-                            required
-                            className="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <button
-                            type="submit"
-                            className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            추가
-                        </button>
-                    </form>
+            )}
+            {success && (
+                <div className="mb-2 bg-green-100 border border-green-400 text-green-700 px-2 py-1 rounded text-xs">
+                    {success}
                 </div>
+            )}
 
-                <div className="bg-white rounded-lg shadow overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full">
-                            <thead>
-                                <tr className="bg-gray-100">
-                                    <th className="px-6 py-3 text-center font-semibold border-b">창고</th>
-                                    <th className="px-6 py-3 text-center font-semibold border-b">작업</th>
+            <div className="mb-4">
+                <form onSubmit={handleAddWarehouse} className="flex gap-2">
+                    <input
+                        type="text"
+                        placeholder="새 창고 이름"
+                        value={newWarehouse}
+                        onChange={(e) => setNewWarehouse(e.target.value)}
+                        required
+                        className="flex-1 px-2 py-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    />
+                    <button
+                        type="submit"
+                        className="px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    >
+                        추가
+                    </button>
+                </form>
+            </div>
+
+            <div className="flex-1 bg-white rounded-lg shadow overflow-hidden flex flex-col">
+                <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-100">
+                        <tr className="text-xs">
+                            <th className="w-[calc(100%-100px)] px-3 py-2 text-center font-semibold border-b">창고</th>
+                            <th className="w-[100px] px-3 py-2 text-center font-semibold border-b">작업</th>
+                        </tr>
+                    </thead>
+                </table>
+                <div className="flex-1 overflow-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <tbody className="text-xs bg-white">
+                            {warehouses.map((m) => (
+                                <tr key={m.id} className="hover:bg-gray-50">
+                                    <td className="w-[calc(100%-100px)] px-3 py-2 text-center border-b">{m.warehouse}</td>
+                                    <td className="w-[100px] px-3 py-2 text-center border-b">
+                                        <button 
+                                            onClick={() => handleDeleteWarehouse(m.id)}
+                                            className="px-2 py-0.5 text-xs text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                        >
+                                            삭제
+                                        </button>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {warehouses.map((m) => (
-                                    <tr key={m.id} className="hover:bg-gray-50">
-                                        <td className="px-6 py-3 text-center border-b">{m.warehouse}</td>
-                                        <td className="px-6 py-3 text-center border-b">
-                                            <button 
-                                                onClick={() => handleDeleteWarehouse(m.id)}
-                                                className="px-3 py-1 text-sm text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                                            >
-                                                삭제
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

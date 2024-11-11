@@ -12,7 +12,7 @@ const InventoryCard = ({ item }) => {
         <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 border border-gray-100 p-4 relative">
             <h3 className="text-xl font-semibold mb-2">{item.name}</h3>
             <div className="text-gray-600">
-                <p className="mb-1">제조사: {item.manufacturer}</p>
+                <p className="mb-1">메이커: {item.manufacturer}</p>
                 <p className="mb-1">수량: {item.quantiry}</p>
                 <p className="mb-1">박스: {item.boxes}</p>
             </div>

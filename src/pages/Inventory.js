@@ -18,8 +18,8 @@ function Inventory() {
           <table>
             <thead>
               <tr>
-                <th>제조사</th>
-                <th>품목</th>
+                <th>메이커</th>
+                <th>물품</th>
                 <th>수량</th>
                 <th>박스</th>
                 <th>전체 수량</th>

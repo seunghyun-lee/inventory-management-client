@@ -33,7 +33,7 @@ function OutboundForm() {
             }));
         } catch (error) {
             console.error('Error fetching item details:', error);
-            setError('품목 정보를 불러오는데 실패했습니다. 나중에 다시 시도해 주세요.');
+            setError('물품 정보를 불러오는데 실패했습니다. 나중에 다시 시도해 주세요.');
         } finally {
             setLoading(false);
         }
@@ -105,7 +105,7 @@ function OutboundForm() {
         return (
             <div className="min-h-screen bg-gray-50 sm:p-6 md:p-6">
                 <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
-                    품목을 찾을 수 없습니다.
+                    물품을 찾을 수 없습니다.
                 </div>
             </div>
         );
