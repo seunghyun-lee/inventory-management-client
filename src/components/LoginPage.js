@@ -89,12 +89,12 @@ function LoginPage({ onLogin }) {
                     </div>
 
                     <div className="mt-3 space-y-1 text-center text-sm">
-                        <Link 
+                        {/* <Link 
                             to="/signup" 
                             className="block text-blue-500 hover:text-blue-600"
                         >
                             회원가입
-                        </Link>
+                        </Link> */}
                         <Link 
                             to="/reset-password"
                             className="block text-blue-500 hover:text-blue-600"
