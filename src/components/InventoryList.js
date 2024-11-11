@@ -79,42 +79,41 @@ function InventoryList() {
             }
             return acc;
         }, {}));
-
+    
         const processedData = [];
         let grandTotal = 0;
-
-        // 물품명과 뒷부호로 그룹화하여 소계 계산
+    
+        // 물품명으로만 그룹화
         const groupedByName = mergedData.reduce((acc, item) => {
-            const key = `${item.item_name}|${item.item_subname || ''}`;
+            const key = item.item_name;
             if (!acc[key]) {
                 acc[key] = [];
             }
             acc[key].push(item);
             return acc;
         }, {});
-
-        // 그룹별로 처리하고 소계/총계 추가
-        Object.entries(groupedByName).forEach(([key, items]) => {
-            const [itemName, itemSubname] = key.split('|');
-            const groupTotal = items.reduce((sum, item) => sum + (parseInt(item.current_quantity) || 0), 0);
-            
+    
+        // 물품명별로 처리하고 소계/총계 추가
+        Object.entries(groupedByName).forEach(([itemName, items]) => {
             // 개별 항목 추가
             items.forEach(item => {
                 processedData.push(item);
             });
-
+    
+            // 물품명별 총계 계산
+            const groupTotal = items.reduce((sum, item) => sum + (parseInt(item.current_quantity) || 0), 0);
+            
             // 소계 추가
             processedData.push({
                 type: 'subtotal',
                 item_name: itemName,
-                item_subname: itemSubname,
                 current_quantity: groupTotal,
                 quantity: groupTotal
             });
             grandTotal += groupTotal;
         });
-
-        // 총계 추가
+    
+        // 전체 총계 추가
         if (processedData.length > 0) {
             processedData.push({
                 type: 'total',
@@ -124,7 +123,7 @@ function InventoryList() {
         }
     
         return processedData;
-    };   
+    };
 
     const handleOutbound = (itemId) => {
         navigate(`/outbound/${itemId}`);
