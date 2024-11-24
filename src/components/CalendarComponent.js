@@ -478,19 +478,22 @@ const CalendarComponent = () => {
                             : isEndDay
                                 ? 'rounded-r-md rounded-l-none'
                                 : 'rounded-none'
-                    ) : 'rounded-md'}`}
+                    ) : 'rounded-md'}
+                    ${event.is_completed ? 'opacity-50' : ''}`}
                 style={{ 
                     backgroundColor: event.color,
                     color: 'white',
                     marginBottom: '1px',
-                    minHeight: '20px', // 높이 축소
+                    minHeight: '20px',
                 }}
                 onClick={() => handleEventClick(event)}
                 title={`${event.title}\n${event.description}`}
             >
                 {(isStartDay || !isMultiDay) ? (
                     <div className="flex items-center w-full">
-                        <span className="text-[11px] font-medium truncate">
+                        <span className={`text-[11px] font-medium truncate ${
+                            event.is_completed ? 'line-through' : ''
+                        }`}>
                             {event.title}
                         </span>
                     </div>
@@ -573,6 +576,24 @@ const CalendarComponent = () => {
                 hour12: false
             });
         };
+
+        const handleToggleCompletion = async () => {
+            try {
+                const response = await axios.patch(
+                    `${API_BASE_URL}/api/events/${event.id}/toggle-completion`
+                );
+                if (response.data) {
+                    // 이벤트 목록 업데이트
+                    setEvents(prev => prev.map(e => 
+                        e.id === event.id ? response.data : e
+                    ));
+                    onClose();
+                }
+            } catch (error) {
+                console.error('Error toggling completion status:', error);
+                setError('일정 상태 업데이트에 실패했습니다.');
+            }
+        };    
     
         return (
             <div className="space-y-6 p-6 bg-white rounded-lg">
@@ -619,25 +640,39 @@ const CalendarComponent = () => {
                     </div>
                 </div>
     
-                <div className="flex justify-end space-x-2 pt-4">
+                <div className="flex justify-between items-center pt-4">
+
                     <button
-                        onClick={onDelete}
-                        className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        onClick={handleToggleCompletion}
+                        className={`px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                            event.is_completed
+                                ? 'bg-green-100 text-green-700 hover:bg-green-200 focus:ring-green-500'
+                                : 'bg-green-500 text-white hover:bg-green-600 focus:ring-green-500'
+                        }`}
                     >
-                        삭제
+                        {event.is_completed ? '완료됨' : '완료하기'}
                     </button>
-                    <button
-                        onClick={onEdit}
-                        className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        수정
-                    </button>
-                    <button
-                        onClick={onClose}
-                        className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                    >
-                        닫기
-                    </button>
+
+                    <div className="flex space-x-2">
+                        <button
+                            onClick={onDelete}
+                            className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        >
+                            삭제
+                        </button>
+                        <button
+                            onClick={onEdit}
+                            className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            수정
+                        </button>
+                        <button
+                            onClick={onClose}
+                            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        >
+                            닫기
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -1086,7 +1121,8 @@ const CalendarComponent = () => {
                                                                 key={eventIndex}
                                                                 className={`absolute left-0 right-0 mx-1 h-6 px-2 flex items-center text-white text-xs cursor-pointer
                                                                     ${isStart ? 'rounded-l-md' : ''}
-                                                                    ${isEnd ? 'rounded-r-md' : ''}`}
+                                                                    ${isEnd ? 'rounded-r-md' : ''}
+                                                                    ${event.is_completed ? 'opacity-50' : ''}`}
                                                                 style={{
                                                                     backgroundColor: event.color,
                                                                     top: `${eventIndex * 28}px`,
@@ -1095,7 +1131,9 @@ const CalendarComponent = () => {
                                                                 onClick={() => handleEventClick(event)}
                                                             >
                                                                 {(isStart || (!isStart && dayIndex === 0)) && (
-                                                                    <span className="truncate">{event.title}</span>
+                                                                    <span className={`truncate ${event.is_completed ? 'line-through' : ''}`}>
+                                                                        {event.title}
+                                                                    </span>
                                                                 )}
                                                             </div>
                                                         );
@@ -1161,7 +1199,8 @@ const CalendarComponent = () => {
                                                         return (
                                                             <div
                                                                 key={i}
-                                                                className="absolute left-0 right-0 mx-1 rounded-md overflow-hidden cursor-pointer hover:opacity-90"
+                                                                className={`absolute left-0 right-0 mx-1 rounded-md overflow-hidden cursor-pointer hover:opacity-90
+                                                                    ${event.is_completed ? 'opacity-50' : ''}`}
                                                                 style={{
                                                                     top: `${top}%`,
                                                                     height: `${height}%`,
@@ -1173,8 +1212,12 @@ const CalendarComponent = () => {
                                                                 title={`${event.title}\n${timeStr}\n${event.description}`}
                                                             >
                                                                 <div className="p-1 text-white text-xs">
-                                                                    <div className="font-medium truncate">{event.title}</div>
-                                                                    <div className="text-[10px] opacity-90">{timeStr}</div>
+                                                                    <div className={`font-medium truncate ${event.is_completed ? 'line-through' : ''}`}>
+                                                                        {event.title}
+                                                                    </div>
+                                                                    <div className={`text-[10px] opacity-90 ${event.is_completed ? 'line-through' : ''}`}>
+                                                                        {timeStr}
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         );
@@ -1264,7 +1307,8 @@ const CalendarComponent = () => {
                                                     return (
                                                         <div
                                                             key={i}
-                                                            className="absolute left-0 right-0 mx-1 rounded-md overflow-hidden cursor-pointer hover:opacity-90"
+                                                            className={`absolute left-0 right-0 mx-1 rounded-md overflow-hidden cursor-pointer hover:opacity-90
+                                                                ${event.is_completed ? 'opacity-50' : ''}`}
                                                             style={{
                                                                 top: `${top}%`,
                                                                 height: `${height}%`,
@@ -1276,8 +1320,12 @@ const CalendarComponent = () => {
                                                             title={`${event.title}\n${timeStr}\n${event.description}`}
                                                         >
                                                             <div className="p-1 text-white text-xs">
-                                                                <div className="font-medium truncate">{event.title}</div>
-                                                                <div className="text-[10px] opacity-90">{timeStr}</div>
+                                                                <div className={`font-medium truncate ${event.is_completed ? 'line-through' : ''}`}>
+                                                                    {event.title}
+                                                                </div>
+                                                                <div className={`text-[10px] opacity-90 ${event.is_completed ? 'line-through' : ''}`}>
+                                                                    {timeStr}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     );

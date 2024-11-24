@@ -457,22 +457,6 @@ function InboundForm({ editMode = false }) {
 
                         <div className="grid grid-cols-12 gap-4 items-center">
                             <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">
-                                수량
-                            </label>
-                            <div className="col-span-9 sm:col-span-9 md:col-span-10">
-                                <input
-                                    type="number"
-                                    name="total_quantity"
-                                    value={formData.total_quantity}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-12 gap-4 items-center">
-                            <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">
                                 뒷부호
                             </label>
                             <div className="col-span-9 sm:col-span-9 md:col-span-10">
@@ -496,6 +480,22 @@ function InboundForm({ editMode = false }) {
                                     name="item_subno"
                                     value={formData.item_subno}
                                     onChange={handleChange}
+                                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-12 gap-4 items-center">
+                            <label className="col-span-3 sm:col-span-3 md:col-span-2 text-sm font-medium text-gray-700">
+                                수량
+                            </label>
+                            <div className="col-span-9 sm:col-span-9 md:col-span-10">
+                                <input
+                                    type="number"
+                                    name="total_quantity"
+                                    value={formData.total_quantity}
+                                    onChange={handleChange}
+                                    required
                                     className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>

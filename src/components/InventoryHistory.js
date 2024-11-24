@@ -960,280 +960,279 @@ function InventoryHistory() {
     }
     
     return (
-        <div className="max-w-full">
-            <div className="px-4">
-                <div className="mb-6 flex justify-between items-center">
-                    <h2 className="text-2xl font-bold">재고 이력</h2>
-                    
-                    <div className="space-x-2">
+        <div className="flex flex-col h-[calc(100vh-8rem)]">
+            <div className="mb-6 flex justify-between items-center">
+                <h2 className="text-2xl font-bold">재고 이력</h2>                
+                <div className="space-x-2">
+                    <button 
+                        onClick={handleExcelDownload}
+                        className="px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    >
+                        Excel 다운로드
+                    </button>
+                    {canEdit && (
                         <button 
-                            onClick={handleExcelDownload}
-                            className="px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            onClick={handleInbound}
+                            className="px-3 py-1 text-sm text-white bg-green-500 rounded hover:bg-green-600 focus:outline-none focus:ring-1 focus:ring-green-500"
                         >
-                            Excel 다운로드
+                            입고 등록
                         </button>
-                        {canEdit && (
-                            <button 
-                                onClick={handleInbound}
-                                className="px-3 py-1 text-sm text-white bg-green-500 rounded hover:bg-green-600 focus:outline-none focus:ring-1 focus:ring-green-500"
-                            >
-                                입고 등록
-                            </button>
-                        )}
-                    </div>
+                    )}
                 </div>
-                
-                <form onSubmit={handleSearch} className="mb-6">
-                    <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
-                        <input
-                            type="date"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                            className="w-full sm:w-auto px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <input
-                            type="date"
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                            className="w-full sm:w-auto px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <button 
-                            type="submit" 
-                            className="w-full sm:w-auto px-4 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            검색
-                        </button>
-                    </div>
-                </form>
-    
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
+            </div>
+            
+            <form onSubmit={handleSearch} className="mb-6">
+                <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
                     <input
-                        type="text"
-                        name="type"
-                        placeholder="구분"
-                        value={filters.type}
-                        onChange={handleFilterChange}
-                        className="px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-full sm:w-auto px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <input
-                        type="text"
-                        name="company"
-                        placeholder="회사"
-                        value={filters.company}
-                        onChange={handleFilterChange}
-                        className="px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-full sm:w-auto px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    <input
-                        type="text"
-                        name="item_name"
-                        placeholder="물품명"
-                        value={filters.item_name}
-                        onChange={handleFilterChange}
-                        className="px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <input
-                        type="text"
-                        name="item_subname"
-                        placeholder="뒷부호"
-                        value={filters.item_subname}
-                        onChange={handleFilterChange}
-                        className="px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <input
-                        type="text"
-                        name="manufacturer"
-                        placeholder="메이커"
-                        value={filters.manufacturer}
-                        onChange={handleFilterChange}
-                        className="px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <input
-                        type="text"
-                        name="warehouse_name"
-                        placeholder="창고"
-                        value={filters.warehouse_name}
-                        onChange={handleFilterChange}
-                        className="px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <input
-                        type="text"
-                        name="warehouse_shelf"
-                        placeholder="위치"
-                        value={filters.warehouse_shelf}
-                        onChange={handleFilterChange}
-                        className="px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+                    <button 
+                        type="submit" 
+                        className="w-full sm:w-auto px-4 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        검색
+                    </button>
                 </div>
-    
-                <ErrorModal 
-                    isOpen={showErrorModal}
-                    onClose={() => {
-                        setShowErrorModal(false);
-                        setErrorMessage('');
-                    }}
-                    message={errorMessage}
-                />
+            </form>
 
-                <OutboundDeleteConfirmModal 
-                    isOpen={showOutboundDeleteConfirm}
-                    onClose={() => {
-                        setShowOutboundDeleteConfirm(false);
-                        setDeleteOutboundItemId(null);
-                    }}
-                    onConfirm={performOutboundDelete}
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
+                <input
+                    type="text"
+                    name="type"
+                    placeholder="구분"
+                    value={filters.type}
+                    onChange={handleFilterChange}
+                    className="px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-    
-                <OutboundDeleteResultModal 
-                    isOpen={showOutboundDeleteResult}
-                    onClose={() => {
-                        setShowOutboundDeleteResult(false);
-                        setOutboundDeleteResult(null);
-                    }}
-                    result={outboundDeleteResult}
+                <input
+                    type="text"
+                    name="company"
+                    placeholder="회사"
+                    value={filters.company}
+                    onChange={handleFilterChange}
+                    className="px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                
-                <EditOutboundModal
-                    isOpen={isEditOutboundModalOpen}
-                    onClose={() => setIsEditOutboundModalOpen(false)}
-                    record={selectedOutboundRecord}
-                    onUpdate={fetchHistory}
+                <input
+                    type="text"
+                    name="item_name"
+                    placeholder="물품명"
+                    value={filters.item_name}
+                    onChange={handleFilterChange}
+                    className="px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                
-                <OutboundEditResultModal 
-                    isOpen={showOutboundEditResult}
-                    onClose={() => {
-                        setShowOutboundEditResult(false);
-                        setOutboundEditResult(null);
-                    }}
-                    result={outboundEditResult}
+                <input
+                    type="text"
+                    name="item_subname"
+                    placeholder="뒷부호"
+                    value={filters.item_subname}
+                    onChange={handleFilterChange}
+                    className="px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-    
-                {/* 입고 관련 모달들 */}
-                <EditInboundModal
-                    isOpen={isEditInboundModalOpen}
-                    onClose={() => setIsEditInboundModalOpen(false)}
-                    record={selectedInboundRecord}
-                    onUpdate={fetchHistory}
+                <input
+                    type="text"
+                    name="manufacturer"
+                    placeholder="메이커"
+                    value={filters.manufacturer}
+                    onChange={handleFilterChange}
+                    className="px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+                <input
+                    type="text"
+                    name="warehouse_name"
+                    placeholder="창고"
+                    value={filters.warehouse_name}
+                    onChange={handleFilterChange}
+                    className="px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <input
+                    type="text"
+                    name="warehouse_shelf"
+                    placeholder="위치"
+                    value={filters.warehouse_shelf}
+                    onChange={handleFilterChange}
+                    className="px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
 
-                <InboundCancelConfirmModal 
-                    isOpen={showInboundCancelConfirm}
-                    onClose={() => {
-                        setShowInboundCancelConfirm(false);
-                        setSelectedInboundRecord(null);
-                    }}
-                    onConfirm={performInboundCancel}
-                />
+            <ErrorModal 
+                isOpen={showErrorModal}
+                onClose={() => {
+                    setShowErrorModal(false);
+                    setErrorMessage('');
+                }}
+                message={errorMessage}
+            />
 
-                <InboundResultModal 
-                    isOpen={showInboundEditResult}
-                    onClose={() => {
-                        setShowInboundEditResult(false);
-                        setInboundEditResult(null);
-                    }}
-                    result={inboundEditResult}
-                    title="입고 수정 완료"
-                    message="입고 정보가 수정되었습니다."
-                />
+            <OutboundDeleteConfirmModal 
+                isOpen={showOutboundDeleteConfirm}
+                onClose={() => {
+                    setShowOutboundDeleteConfirm(false);
+                    setDeleteOutboundItemId(null);
+                }}
+                onConfirm={performOutboundDelete}
+            />
 
-                <InboundResultModal 
-                    isOpen={showInboundCancelResult}
-                    onClose={() => {
-                        setShowInboundCancelResult(false);
-                        setInboundCancelResult(null);
-                    }}
-                    result={inboundCancelResult}
-                    title="입고 취소 완료"
-                    message="입고가 취소되었습니다."
-                />
+            <OutboundDeleteResultModal 
+                isOpen={showOutboundDeleteResult}
+                onClose={() => {
+                    setShowOutboundDeleteResult(false);
+                    setOutboundDeleteResult(null);
+                }}
+                result={outboundDeleteResult}
+            />
+            
+            <EditOutboundModal
+                isOpen={isEditOutboundModalOpen}
+                onClose={() => setIsEditOutboundModalOpen(false)}
+                record={selectedOutboundRecord}
+                onUpdate={fetchHistory}
+            />
+            
+            <OutboundEditResultModal 
+                isOpen={showOutboundEditResult}
+                onClose={() => {
+                    setShowOutboundEditResult(false);
+                    setOutboundEditResult(null);
+                }}
+                result={outboundEditResult}
+            />
 
-                <div className="bg-white rounded-lg shadow">
-                    <div className="w-full overflow-x-auto">
-                        <table className="w-full min-w-[1200px]">
-                            <thead>
-                                <tr className="bg-gray-100">
-                                    <th className="px-4 py-2 text-sm font-semibold text-center whitespace-nowrap">날짜</th>
-                                    <th className="px-4 py-2 text-sm font-semibold text-center whitespace-nowrap">구분</th>
-                                    <th className="px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">회사</th>
-                                    <th className="px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">물품명</th>
-                                    <th className="px-4 py-2 text-sm font-semibold text-right whitespace-nowrap">수량</th>
-                                    <th className="px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">뒷부호</th>
-                                    <th className="px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">추가번호</th>
-                                    <th className="px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">메이커</th>
-                                    <th className="px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">창고</th>
-                                    <th className="px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">위치</th>
-                                    <th className="px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">메모</th>
-                                    <th className="px-4 py-2 text-sm font-semibold text-center whitespace-nowrap">담당자</th>
+            {/* 입고 관련 모달들 */}
+            <EditInboundModal
+                isOpen={isEditInboundModalOpen}
+                onClose={() => setIsEditInboundModalOpen(false)}
+                record={selectedInboundRecord}
+                onUpdate={fetchHistory}
+            />
+
+            <InboundCancelConfirmModal 
+                isOpen={showInboundCancelConfirm}
+                onClose={() => {
+                    setShowInboundCancelConfirm(false);
+                    setSelectedInboundRecord(null);
+                }}
+                onConfirm={performInboundCancel}
+            />
+
+            <InboundResultModal 
+                isOpen={showInboundEditResult}
+                onClose={() => {
+                    setShowInboundEditResult(false);
+                    setInboundEditResult(null);
+                }}
+                result={inboundEditResult}
+                title="입고 수정 완료"
+                message="입고 정보가 수정되었습니다."
+            />
+
+            <InboundResultModal 
+                isOpen={showInboundCancelResult}
+                onClose={() => {
+                    setShowInboundCancelResult(false);
+                    setInboundCancelResult(null);
+                }}
+                result={inboundCancelResult}
+                title="입고 취소 완료"
+                message="입고가 취소되었습니다."
+            />
+
+            <div className="flex-1 bg-white rounded-lg shadow overflow-hidden flex flex-col">
+                <table className="min-w-full table-fixed min-w-[1200px]">
+                    <thead className="bg-gray-100">
+                        <tr>
+                            <th className="w-[8%] px-4 py-2 text-sm font-semibold text-center whitespace-nowrap">날짜</th>
+                            <th className="w-[4%] px-4 py-2 text-sm font-semibold text-center whitespace-nowrap">구분</th>
+                            <th className="w-[10%] px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">회사</th>
+                            <th className="w-[12%] px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">물품명</th>
+                            <th className="w-[6%] px-4 py-2 text-sm font-semibold text-right whitespace-nowrap">수량</th>
+                            <th className="w-[8%] px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">뒷부호</th>
+                            <th className="w-[8%] px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">추가번호</th>
+                            <th className="w-[8%] px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">메이커</th>
+                            <th className="w-[6%] px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">창고</th>
+                            <th className="w-[6%] px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">위치</th>
+                            <th className="w-[8%] px-4 py-2 text-sm font-semibold text-left whitespace-nowrap">메모</th>
+                            <th className="w-[6%] px-4 py-2 text-sm font-semibold text-center whitespace-nowrap">담당자</th>
+                            {canEdit && (
+                                <th className="w-[10%] px-4 py-2 text-sm font-semibold text-center whitespace-nowrap">작업</th>
+                            )}
+                            <th className="w-[0%] px-2 py-1"></th>
+                        </tr>
+                    </thead>
+                </table>
+                <div className="flex-1 overflow-auto">
+                    <table className="min-w-full table-fixed min-w-[1200px]">
+                        <tbody className="divide-y divide-gray-200">
+                            {filteredHistory.map((item, index) => (
+                                <tr 
+                                    key={index}
+                                    className={`hover:bg-gray-50 ${item.type === 'inbound' ? 'bg-blue-50' : 'bg-red-50'}`}
+                                >
+                                    <td className="w-[8%] px-4 py-2 text-sm text-center whitespace-nowrap">{formatDate(item.date)}</td>
+                                    <td className="w-[4%] px-4 py-2 text-sm text-center whitespace-nowrap">
+                                        <span className={item.type === 'inbound' ? 'text-blue-600' : 'text-red-600'}>
+                                            {item.type === 'inbound' ? '입고' : '출고'}
+                                        </span>
+                                    </td>
+                                    <td className="w-[10%] px-4 py-2 text-sm text-left">{item.company}</td>
+                                    <td className="w-[12%] px-4 py-2 text-sm text-left">{item.item_name}</td>
+                                    <td className="w-[6%] px-4 py-2 text-sm text-right whitespace-nowrap">{item.total_quantity}</td>
+                                    <td className="w-[8%] px-4 py-2 text-sm text-left">{item.item_subname}</td>
+                                    <td className="w-[8%] px-4 py-2 text-sm text-left">{item.item_subno}</td>
+                                    <td className="w-[8%] px-4 py-2 text-sm text-left">{item.manufacturer}</td>
+                                    <td className="w-[6%] px-4 py-2 text-sm text-left">{item.warehouse_name}</td>
+                                    <td className="w-[6%] px-4 py-2 text-sm text-left">{item.warehouse_shelf}</td>
+                                    <td className="w-[8%] px-4 py-2 text-sm text-left">{item.description}</td>
+                                    <td className="w-[6%] px-4 py-2 text-sm text-center whitespace-nowrap">{item.handler_name}</td>
                                     {canEdit && (
-                                        <th className="px-4 py-2 text-sm font-semibold text-center whitespace-nowrap">작업</th>
+                                        <td className="w-[10%] px-4 py-2 text-sm text-center whitespace-nowrap">
+                                            <div className="flex justify-center gap-2">
+                                                {item.type === 'outbound' ? (
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleEditOutbound(item)}
+                                                            className="px-2 py-1 text-xs text-white bg-yellow-500 rounded hover:bg-yellow-600"
+                                                        >
+                                                            수정
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteOutboundClick(item.id)}
+                                                            className="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600"
+                                                        >
+                                                            삭제
+                                                        </button>
+                                                    </>
+                                                ) : canModifyInbound(item) && (
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleEditInbound(item)}
+                                                            className="px-2 py-1 text-xs text-white bg-yellow-500 rounded hover:bg-yellow-600"
+                                                        >
+                                                            수정
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleInboundCancel(item)}
+                                                            className="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600"
+                                                        >
+                                                            취소
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </td>
                                     )}
                                 </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200">
-                                {filteredHistory.map((item, index) => (
-                                    <tr 
-                                        key={index}
-                                        className={`hover:bg-gray-50 ${item.type === 'inbound' ? 'bg-blue-50' : 'bg-red-50'}`}
-                                    >
-                                        <td className="px-4 py-2 text-sm text-center whitespace-nowrap">{formatDate(item.date)}</td>
-                                        <td className="px-4 py-2 text-sm text-center whitespace-nowrap">
-                                            <span className={item.type === 'inbound' ? 'text-blue-600' : 'text-red-600'}>
-                                                {item.type === 'inbound' ? '입고' : '출고'}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-2 text-sm text-left">{item.company}</td>
-                                        <td className="px-4 py-2 text-sm text-left">{item.item_name}</td>
-                                        <td className="px-4 py-2 text-sm text-right whitespace-nowrap">{item.total_quantity}</td>
-                                        <td className="px-4 py-2 text-sm text-left">{item.item_subname}</td>
-                                        <td className="px-4 py-2 text-sm text-left">{item.item_subno}</td>
-                                        <td className="px-4 py-2 text-sm text-left">{item.manufacturer}</td>
-                                        <td className="px-4 py-2 text-sm text-left">{item.warehouse_name}</td>
-                                        <td className="px-4 py-2 text-sm text-left">{item.warehouse_shelf}</td>
-                                        <td className="px-4 py-2 text-sm text-left">{item.description}</td>
-                                        <td className="px-4 py-2 text-sm text-center whitespace-nowrap">{item.handler_name}</td>
-                                        {canEdit && (
-                                            <td className="px-4 py-2 text-sm text-center whitespace-nowrap">
-                                            
-                                                <div className="flex justify-center gap-2">
-                                                    {item.type === 'outbound' ? (
-                                                        <>
-                                                            <button
-                                                                onClick={() => handleEditOutbound(item)}
-                                                                className="px-2 py-1 text-xs text-white bg-yellow-500 rounded hover:bg-yellow-600"
-                                                            >
-                                                                수정
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleDeleteOutboundClick(item.id)}
-                                                                className="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600"
-                                                            >
-                                                                삭제
-                                                            </button>
-                                                        </>
-                                                    ) : canModifyInbound(item) && (
-                                                        <>
-                                                            <button
-                                                                onClick={() => handleEditInbound(item)}
-                                                                className="px-2 py-1 text-xs text-white bg-yellow-500 rounded hover:bg-yellow-600"
-                                                            >
-                                                                수정
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleInboundCancel(item)}
-                                                                className="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600"
-                                                            >
-                                                                취소
-                                                            </button>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </td>
-                                        )}                                        
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
