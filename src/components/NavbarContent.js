@@ -39,7 +39,7 @@ function NavbarContent() {
                 <div className="flex items-center justify-between h-16">
                     <div className="flex items-center">
                         <Link to="/" 
-                              className="text-gray-800 hover:text-gray-600 px-3 py-2 text-base lg:text-xl font-bold no-underline truncate max-w-[200px]" 
+                              className="text-gray-800 hover:text-gray-600 px-3 py-2 text-base lg:text-xl font-bold no-underline truncate max-w-[250px]" 
                               onClick={() => setExpanded(false)}>
                             대광베어링 재고관리
                         </Link>
