@@ -28,8 +28,8 @@ function OutboundForm() {
             setItem(response.data);
             setFormData(prevData => ({
                 ...prevData,
-                warehouse_name: response.data.warehouse_name || '',
-                warehouse_shelf: response.data.warehouse_shelf || ''
+                warehouse_name: response.data.warehouse_name,
+                warehouse_shelf: response.data.warehouse_shelf
             }));
         } catch (error) {
             console.error('Error fetching item details:', error);

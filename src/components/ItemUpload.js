@@ -21,24 +21,32 @@ function ItemUpload() {
             setError('파일을 선택해주세요.');
             return;
         }
-
+    
         const formData = new FormData();
         formData.append('file', file);
         
         setLoading(true);
         setError(null);
         setSuccess(null);
-
+    
         try {
-            const response = await axios.post(`${API_BASE_URL}/api/items/upload`, formData, {
+            // const response = await axios.post(`${API_BASE_URL}/api/items/upload/inbound`, formData, {
+            const response = await axios.post(`${API_BASE_URL}/api/items/upload/outbound?skipCheck=true`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-
-            setSuccess(`${response.data.count}개의 아이템이 성공적으로 업로드되었습니다.`);
+    
+            if (response.data.success) {
+                setSuccess(`${response.data.processed}개의 아이템이 성공적으로 업로드되었습니다.`);
+                if (response.data.errors && response.data.errors.length > 0) {
+                    setError(`일부 데이터 처리 중 오류가 발생했습니다: ${response.data.errors.map(e => e.error).join(', ')}`);
+                }
+            } else {
+                setError(response.data.error || '업로드 중 오류가 발생했습니다.');
+            }
+    
             setFile(null);
-            // 파일 입력 초기화
             const fileInput = document.querySelector('input[type="file"]');
             if (fileInput) fileInput.value = '';
         } catch (error) {

@@ -128,8 +128,8 @@ function InventoryList() {
         return processedData;
     };
 
-    const handleOutbound = (itemId) => {
-        navigate(`/outbound/${itemId}`);
+    const handleOutbound = (row) => {
+        navigate(`/outbound/${row.inventory_id}`);
     };
 
     const handleInbound = () => {
@@ -342,7 +342,7 @@ function InventoryList() {
                                             <td className="w-[10%] px-3 py-2 whitespace-nowrap border-b">
                                                 <div className="flex justify-center space-x-1">
                                                     <button
-                                                        onClick={() => handleOutbound(row.id)}
+                                                        onClick={() => handleOutbound(row)}
                                                         className="px-2 py-0.5 text-xs text-white bg-blue-500 rounded hover:bg-blue-600"
                                                     >
                                                         출고
