@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "대광베어링",
+  "name": "대광베어링 재고관리",
   "icons": [
     {
       "src": "favicon.ico",
