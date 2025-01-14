@@ -62,7 +62,7 @@ function OutboundForm() {
         setError(null);
         try {
             await axios.post(`${API_BASE_URL}/api/transactions/outbound`, {
-                item_id: parseInt(itemId, 10),
+                inventory_id: parseInt(itemId, 10), // URL의 id 파라미터를 current_inventory의 id로 사용
                 ...formData,
                 total_quantity: parseInt(formData.total_quantity, 10)
             });
